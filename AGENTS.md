@@ -67,6 +67,20 @@ Never commit `dist/`, `.build/`, signed artifacts, certificates, or profiles.
 
 ---
 
+## 4. Release a new version
+
+Every user-visible change must bump the version and publish a GitHub Release:
+
+```sh
+./scripts/release.sh 1.0.2
+```
+
+This bumps `Support/Info.plist`, builds an ad-hoc universal DMG, commits
+`Release vX.Y.Z`, tags and pushes it, and creates the GitHub Release with the
+DMG. Requires `gh auth login`.
+
+See [`docs/releasing.md`](docs/releasing.md).
+
 ## 4. Install and launch
 
 ```sh
