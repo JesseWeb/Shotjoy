@@ -14,6 +14,14 @@ the menu bar, has no Dock icon, and sends nothing over the network.
 Press **⌃⌘A** (Control-Command-A), drag a region or click a window, annotate it,
 then copy, save, or pin it to the desktop.
 
+## Download
+
+[**Latest release →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
+
+The release DMG is ad-hoc signed (not notarized). On first launch, right-click
+Shotjoy → **Open** → **Open**, then grant Screen Recording. Prefer building from
+source? See below — then the app carries your own signature.
+
 ![Shotjoy overlay](docs/screenshot.png)
 
 ## Features
@@ -45,7 +53,7 @@ then copy, save, or pin it to the desktop.
 ## Build and install
 
 ```sh
-git clone <this repository> ~/Developer/Shotjoy
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
 cd ~/Developer/Shotjoy
 swift test                       # core geometry/stitching tests
 ./scripts/make-app.sh release    # -> dist/Shotjoy.app

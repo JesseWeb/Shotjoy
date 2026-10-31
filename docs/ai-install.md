@@ -25,7 +25,7 @@ Screen Recording grant stays stable.
 ### English
 
 > Install Shotjoy on this Mac:
-> 1. Clone the repository to ~/Developer/Shotjoy
+> 1. Clone https://github.com/JesseWeb/Shotjoy to ~/Developer/Shotjoy
 > 2. Read AGENTS.md in the repo, then run `swift test` and `./scripts/make-app.sh release`
 > 3. Install `dist/Shotjoy.app` to /Applications and launch it
 > 4. Walk me through the Screen Recording grant in System Settings → Privacy & Security, then verify a real ⌃⌘A capture and paste
@@ -35,7 +35,7 @@ Screen Recording grant stays stable.
 ## What the agent will do
 
 1. Check macOS/Xcode versions.
-2. `git clone` the repository into a working folder.
+2. `git clone https://github.com/JesseWeb/Shotjoy.git` into a working folder.
 3. `swift test` (23 core tests, no UI) and `./scripts/make-app.sh release`.
 4. Copy the bundle to `/Applications/Shotjoy.app` and launch it.
 5. Ask you to switch Shotjoy on under

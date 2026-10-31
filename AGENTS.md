@@ -48,7 +48,7 @@ before writing outside it, apart from the `/Applications` copy.
 ## 3. Build
 
 ```sh
-git clone <this repository> ~/Developer/Shotjoy
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
 cd ~/Developer/Shotjoy
 swift test                         # 23 core tests, no UI
 ./scripts/make-app.sh release      # -> dist/Shotjoy.app
