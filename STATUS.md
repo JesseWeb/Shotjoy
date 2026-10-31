@@ -9,28 +9,34 @@
   `dist/ShotDesk-1.0.0.dmg`, mounted and `codesign --verify --strict` passed.
 - `--self-test`: renders an 800×600 PNG with rectangle, arrow, text and mosaic;
   top/bottom orientation and annotation placement verified visually.
-- `--capture-test` (run from a process that already has Screen Recording):
-  ScreenCaptureKit captured the display at **2880×1800 @2.0**, and a selected
-  region rendered to **1600×1188** with an annotation. This confirms the
-  Retina sizing, crop, and final-render path.
-- `--demo-overlay`: the synthetic overlay window renders the dimmed desktop,
-  bright selection, handles, annotations, a live draft stroke, and the toolbar
-  (captured per-window). This verifies that arrow/pen/mosaic drafts are visible
-  before mouse-up.
+- `--capture-test`: ScreenCaptureKit captured the display at **2880×1800 @2.0**,
+  and a selected region rendered to **1600×1188** with an annotation.
+- `--demo-overlay`: synthetic overlay renders the dimmed desktop, bright
+  selection, handles, annotations, a live draft stroke, and the toolbar.
 - `--ocr-test`: Vision recognized `ShotDesk 文字识别 Test 123`.
-- `--analyze-test`: the OCR result was copied to the clipboard and shown in the
-  floating result window (captured per-window).
-- `--status`: `hotkeyRegistered=true`, shortcut `⌃⌘A`, bundle id
-  `dev.shotdesk.ShotDesk`, path `/Applications/ShotDesk.app`.
+- `--analyze-test`: OCR result copied to the clipboard and shown in the floating
+  result window.
+- `--status`: `permission=true`, `hotkeyRegistered=true`, shortcut `⌃⌘A`,
+  bundle id `dev.shotdesk.ShotDesk`, path `/Applications/ShotDesk.app`.
 
-## Pending (needs an unlocked screen)
+## Live end-to-end checks
 
-The Mac was locked (`CGSSessionScreenIsLocked=1`) during the final session, so
-these need a human:
+With the screen unlocked and Screen Recording granted:
 
-1. Grant **System Settings → Privacy & Security → Screen Recording** to ShotDesk.
-2. Press `⌃⌘A` and drag a selection; confirm the toolbar appears and is clickable.
-3. Press Return / click Done; paste into TextEdit.
-4. Test pin, OCR/QR, AI mask, and one scrolling capture.
+1. `⌃⌘A` opened the full-screen overlay with dimmed desktop, crosshair,
+   magnifier, live colour/coordinates.
+2. Dragging produced a bright selection with eight handles and the floating
+   toolbar below it.
+3. Selecting the **pen** and dragging showed the red stroke **while the mouse
+   was still down**; releasing committed it.
+4. Clicking the **text recognition** toolbar button closed the overlay, copied
+   the recognized text to the clipboard, and opened the floating
+   **Recognize Text** result window.
 
-The app is installed at `/Applications/ShotDesk.app`; the DMG is in `dist/`.
+## Still worth a manual pass
+
+- Pin to desktop and its context menu.
+- Scrolling capture with a long page.
+- QR/barcode detection.
+- AI face masking.
+- Hotkey conflict with WeChat, if both are running.
