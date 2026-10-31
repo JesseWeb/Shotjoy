@@ -8,12 +8,12 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · **[繁體中文](README.zh-TW.md)** · [日本語](README.ja.md) · [Français](README.fr.md) · [Español](README.es.md)
 
-Shotjoy（截趣）是一款微信風格的 macOS 截圖工具，使用 SwiftPM 從原始碼建置：
+Shotjoy（截趣）是一款快速、純本地的 macOS 截圖工具，使用 SwiftPM 從原始碼建置：
 支援區域/視窗截圖、截圖標註、捲動截圖、桌面貼圖、本機 OCR、QR Code 辨識與
 AI 人臉打碼。它只住在選單列，沒有 Dock 圖示，也不會把任何內容傳到網路。
 
-> 搜尋關鍵字：macOS 截圖工具、微信風格截圖、截圖標註、捲動截圖、貼圖、
-> 文字辨識、QR Code 辨識、螢幕截圖、Mac 截圖。
+> 搜尋關鍵字：macOS 截圖工具、截圖標註、捲動截圖、貼圖、文字辨識、QR Code 辨識、
+> 螢幕截圖、Mac 截圖。
 
 按 **⌃⌘A**（Control-Command-A），拖曳選取範圍或按一下視窗，完成標註後複製、
 儲存或貼到桌面。
@@ -80,10 +80,6 @@ macOS 只允許使用者在系統設定中授予「螢幕錄製」。第一次�
 
 開啟 **Shotjoy** 的開關，然後重新截圖。部分 macOS 版本需要結束並重新開啟
 Shotjoy 才會生效。
-
-> **從 ShotDesk 改名而來？** Bundle ID 已改為 `dev.shotjoy.Shotjoy`，macOS
-> 會把 Shotjoy 當成新 App，需要重新授予一次螢幕錄製權限。快速鍵與行為偏好
-> 會自動移轉。
 
 如果開關已開啟但 Shotjoy 仍提示權限，通常是簽章變更（ad-hoc 建置常見）。
 按一下選單列圖示 → **修復螢幕錄製權限…**，然後重新授權。App 會為自己的
@@ -156,27 +152,6 @@ Sources/Shotjoy/              AppKit/SwiftUI 選單列 App
   Windows/                     覆蓋層視窗、工具列面板、貼圖面板
 ```
 
-### 與微信的關係
-
-詳見 [`docs/reverse-engineering.md`](docs/reverse-engineering.md)。簡單來說，
-WeChat 4.1.5 的二進位檔中包含 `weshot::ScreenShoter`、
-`weshot::LongScreenShoter`、`GrabWorker`、`SpliceWorker`、`OpenCVWorker`、
-`SizeSelect`、`ColorPanel`、`PinWindow`，以及名為 `ShotSelection` 的選取範圍
-狀態機。Shotjoy 是用公開 macOS API 對同一套可觀察流程的 clean-room 實作，
-不包含微信程式碼、素材、圖示或資料格式。
-
-## 名稱與搜尋
-
-`Shotjoy（截趣）` 是中英雙語品牌：*shot + joy* / *截 + 趣*。一句話介紹、
-GitHub 描述/Topics、中文關鍵字，以及已排查並避開的同名產品，見
-[`docs/branding.md`](docs/branding.md)。
-
-## 驗證狀態
-
-見 [`STATUS.md`](STATUS.md)。核心測試、渲染、Bundle 簽章、DMG 配置、Retina
-截圖流程、真實快速鍵覆蓋層、選取/工具列、畫筆即時預覽、OCR 端到端都已驗證。
-貼圖、捲動截圖、QR Code 與 AI 打碼仍建議手動測試一次。
-
 ## 開發偵錯參數
 
 給 Agent 與除錯使用的隱藏參數：
@@ -190,5 +165,5 @@ open -a /Applications/Shotjoy.app --args --capture       # 立即開始真實截
 
 ## 授權條款
 
-GNU AGPL-3.0。見 [`LICENSE`](LICENSE)。這是 clean-room 專案，請勿把微信程式碼
-或素材複製進來。
+GNU AGPL-3.0。見 [`LICENSE`](LICENSE)。這是 clean-room 專案，請勿把其他截圖工具的程式碼或素材
+複製進來。

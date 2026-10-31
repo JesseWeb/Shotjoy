@@ -17,24 +17,6 @@ final class Preferences {
     private let defaults = UserDefaults.standard
 
     private init() {
-        // One-time migration from the pre-rename ShotDesk preferences. The
-        // display name and bundle id changed, but users should keep their
-        // shortcut and capture preferences.
-        if !defaults.bool(forKey: "didMigrateFromShotDesk"),
-           defaults.object(forKey: Key.hotKeyCode) == nil,
-           let old = UserDefaults(suiteName: "dev.shotdesk.ShotDesk") {
-            let keys = [
-                Key.hotKeyCode, Key.hotKeyModifiers, Key.copyAfterCapture,
-                Key.playSound, Key.saveToDesktop, Key.lastSaveDirectory
-            ]
-            for key in keys {
-                if let value = old.object(forKey: key) {
-                    defaults.set(value, forKey: key)
-                }
-            }
-            defaults.set(true, forKey: "didMigrateFromShotDesk")
-        }
-
         defaults.register(defaults: [
             Key.hotKeyCode: Int(HotKeyConfig.default.keyCode),
             Key.hotKeyModifiers: Int(HotKeyConfig.default.modifiers.rawValue),

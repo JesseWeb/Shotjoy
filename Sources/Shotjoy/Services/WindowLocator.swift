@@ -1,9 +1,8 @@
 import AppKit
 import CoreGraphics
 
-/// Finds the topmost normal window under the pointer. WeChat highlights a
-/// window before you click; this is the same behaviour, built from
-/// `CGWindowListCopyWindowInfo` (one of the APIs WeChat imports).
+/// Finds the topmost normal window under the pointer with
+/// `CGWindowListCopyWindowInfo`.
 enum WindowLocator {
     static func windowRect(at point: CGPoint) -> CGRect? {
         let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]

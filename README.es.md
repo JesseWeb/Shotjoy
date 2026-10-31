@@ -8,14 +8,13 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Français](README.fr.md) · **[Español](README.es.md)**
 
-Shotjoy（截趣）es una herramienta de captura de pantalla para macOS al estilo de
-WeChat, compilada desde el código fuente con SwiftPM: captura de región o ventana,
+Shotjoy（截趣）es una herramienta de captura de pantalla para macOS rápida y totalmente local, compilada desde el código fuente con SwiftPM: captura de región o ventana,
 anotaciones, captura con desplazamiento, fijar en el escritorio, OCR local,
 detección de códigos QR y enmascarado de caras con IA. Vive en la barra de menús,
 no tiene icono en el Dock y no envía nada por la red.
 
-> Palabras clave: captura de pantalla macOS, captura estilo WeChat, anotación de
-> capturas, captura con desplazamiento, fijar captura, OCR, código QR, privacidad.
+> Palabras clave: captura de pantalla macOS, anotación de capturas, captura con
+> desplazamiento, fijar captura, OCR, código QR, privacidad.
 
 Pulsa **⌃⌘A** (Control-Command-A), arrastra una región o haz clic en una ventana,
 añade anotaciones y luego copia, guarda o fija la captura en el escritorio.
@@ -91,11 +90,6 @@ En la primera captura, Shotjoy la solicita y abre:
 Activa **Shotjoy** y vuelve a capturar. Algunas versiones de macOS requieren
 cerrar y volver a abrir Shotjoy después de conceder el permiso.
 
-> **¿Vienes de ShotDesk?** El identificador del bundle cambió a
-> `dev.shotjoy.Shotjoy`, así que macOS trata Shotjoy como una app nueva y pide
-> el permiso de Grabación de pantalla otra vez. Los atajos y preferencias se
-> migran automáticamente.
-
 Si el interruptor ya está activado pero Shotjoy sigue pidiendo permiso, la firma
 habrá cambiado (habitual en compilaciones ad-hoc). Usa **icono de la barra de
 menús → Reparar permiso de grabación de pantalla…** y vuelve a concederlo. La app
@@ -169,30 +163,6 @@ Sources/Shotjoy/              app de barra de menús AppKit/SwiftUI
   Windows/                     ventana de superposición, panel de herramientas, panel fijado
 ```
 
-### Relación con WeChat
-
-Ver [`docs/reverse-engineering.md`](docs/reverse-engineering.md). En resumen, el
-binario de WeChat 4.1.5 contiene `weshot::ScreenShoter`,
-`weshot::LongScreenShoter`, `GrabWorker`, `SpliceWorker`, `OpenCVWorker`,
-`SizeSelect`, `ColorPanel`, `PinWindow` y una máquina de estados de selección
-llamada `ShotSelection`. Shotjoy es una implementación clean-room del mismo flujo
-observable con API públicas de macOS. No contiene código, recursos, iconos ni
-formatos de datos de WeChat.
-
-## Nombre y búsqueda
-
-`Shotjoy（截趣）` es una marca bilingüe: *shot + joy* / *截 + 趣*. Los eslóganes,
-la descripción de GitHub, los temas, las palabras clave en chino y los nombres
-que revisamos y evitamos están en [`docs/branding.md`](docs/branding.md).
-
-## Estado de verificación
-
-Ver [`STATUS.md`](STATUS.md). Están verificadas las pruebas núcleo, el render, la
-firma del bundle, el diseño del DMG, el pipeline Retina, el atajo real, la
-selección y la barra de herramientas, la vista previa del pincel y el OCR de
-extremo a extremo. Conviene probar a mano fijar, captura con desplazamiento,
-código QR y enmascarado con IA.
-
 ## Opciones de desarrollo
 
 Opciones ocultas para agentes y depuración:
@@ -207,4 +177,4 @@ open -a /Applications/Shotjoy.app --args --capture       # inicia una captura re
 ## Licencia
 
 GNU AGPL-3.0. Ver [`LICENSE`](LICENSE). Proyecto clean-room: no copies código ni
-recursos de WeChat.
+recursos de otras herramientas de captura.

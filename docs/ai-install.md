@@ -19,7 +19,7 @@ Screen Recording grant stays stable.
 > 2. 阅读仓库里的 AGENTS.md，按它执行 `swift test` 和 `./scripts/make-app.sh release`
 > 3. 把 `dist/Shotjoy.app` 安装到 /Applications 并启动
 > 4. 引导我在「系统设置 → 隐私与安全性 → 屏幕录制」中授权，然后实际按 ⌃⌘A 截图并粘贴验证
-> 5. 如果微信占用了 ⌃⌘A，帮我在 Shotjoy 设置里换一个快捷键
+> 5. 如果其他 App 占用了 ⌃⌘A，帮我在 Shotjoy 设置里换一个快捷键
 > 6. 最后告诉我：签名身份、权限状态、数据位置、怎么卸载
 
 ### English
@@ -29,7 +29,7 @@ Screen Recording grant stays stable.
 > 2. Read AGENTS.md in the repo, then run `swift test` and `./scripts/make-app.sh release`
 > 3. Install `dist/Shotjoy.app` to /Applications and launch it
 > 4. Walk me through the Screen Recording grant in System Settings → Privacy & Security, then verify a real ⌃⌘A capture and paste
-> 5. If WeChat owns ⌃⌘A, change Shotjoy's shortcut in Settings
+> 5. If another app owns ⌃⌘A, change Shotjoy's shortcut in Settings
 > 6. Tell me which signing identity was used, the permission state, where data lives, and how to uninstall
 
 ## What the agent will do
@@ -56,7 +56,7 @@ Screen Recording grant stays stable.
 |---|---|
 | `xcodebuild: error: tool 'xcodebuild' requires Xcode` | Only Command Line Tools are installed — install Xcode |
 | The Screen Recording switch is on but Shotjoy still asks | Ad-hoc signature changed after a rebuild: menu-bar icon → **Fix Screen Recording Permission…** |
-| `⌃⌘A` does nothing | WeChat or another app owns the shortcut: quit it or change Shotjoy's shortcut in Settings |
+| `⌃⌘A` does nothing | Another app owns the shortcut: quit it or change Shotjoy's shortcut in Settings |
 | The overlay appears but clicks do nothing | The screen is locked, or another app is in a secure-input state: unlock and retry |
 | Scrolling capture has a seam | Scroll more slowly, or select a region with more texture |
 

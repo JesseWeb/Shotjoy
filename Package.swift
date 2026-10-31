@@ -1,6 +1,6 @@
 // swift-tools-version: 5.9
 //
-// Shotjoy — a WeChat-style screenshot tool for macOS.
+// Shotjoy — a fast, local-only screenshot tool for macOS.
 // GNU AGPL-3.0. See LICENSE.
 
 import PackageDescription

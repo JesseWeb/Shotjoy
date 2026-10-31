@@ -33,10 +33,9 @@ enum ScreenCaptureError: LocalizedError {
 
 /// Captures every display at native resolution.
 ///
-/// WeChat 4.1 imports both the legacy `CGDisplayCreateImage` family and the
-/// modern `SCScreenshotManager` / `SCShareableContent` APIs. Shotjoy follows
-/// the same two-tier approach: prefer ScreenCaptureKit on macOS 14+, fall back
-/// to CoreGraphics if ScreenCaptureKit is unavailable or fails.
+/// Shotjoy prefers the modern `SCScreenshotManager` / `SCShareableContent`
+/// APIs on macOS 14+, and falls back to CoreGraphics when ScreenCaptureKit is
+/// unavailable or fails.
 enum ScreenCaptureService {
     static var hasPermission: Bool {
         CGPreflightScreenCaptureAccess()

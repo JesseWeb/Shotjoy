@@ -3,7 +3,7 @@
 Instructions for coding agents (Claude Code, Codex, Cursor, Gemini CLI, …) asked
 to build, install, or modify **Shotjoy（截趣）**.
 
-Shotjoy is a WeChat-style macOS screenshot tool: region/window capture,
+Shotjoy is a fast, local-only macOS screenshot tool: region/window capture,
 annotations, scrolling screenshots, pin-to-desktop, OCR/QR and AI face masking.
 
 Shotjoy is a local-only macOS screenshot menu-bar app written in Swift
@@ -133,7 +133,7 @@ Developer ID or Apple Development signature keeps the grant stable.
 
 If the shortcut does nothing:
 
-- WeChat also owns `⌃⌘A`. Quit WeChat, or change Shotjoy's shortcut in
+- Another app may own `⌃⌘A`. Quit it, or change Shotjoy's shortcut in
   **Settings… → Record**.
 - Check the menu-bar icon's menu item shows the expected shortcut.
 
@@ -151,9 +151,8 @@ If the shortcut does nothing:
   scroll and content with enough texture. Very fast jumps or long blank areas
   can produce a seam.
 - **AI features are local.** OCR/QR/face detection use Apple Vision. There is
-  no "Ask AI" cloud feature; WeChat's "问 AI" uses Tencent Yuanbao and is not
-  reproduced. The AI button is **face masking**, not an emoji/sticker tool; if
-  no face is detected it shows a toast.
+  there is no cloud AI feature. The AI button is **face masking**, not an
+  emoji/sticker tool; if no face is detected it shows a toast.
 - **Pins are session-only.** Pinned images disappear when Shotjoy quits.
 - **No history.** Only the last screenshot is kept in memory for the menu.
 
@@ -164,8 +163,8 @@ If the shortcut does nothing:
 - **Source only.** `dist/` and `.build/` are gitignored. Never commit built
   `.app`, `.icns`, `.dmg`, certificates, `.p12`, or provisioning profiles.
 - **Clean room.** Do not copy code, assets, icons, sounds, strings, or data
-  formats from WeChat or other screenshot apps. Behaviour may be reproduced from
-  public APIs and observation; implementation must be original.
+  formats from other screenshot apps. Behaviour may be reproduced from public
+  APIs and observation; implementation must be original.
 - **No network.** Keep the local-only promise: no analytics, telemetry,
   auto-update, account, or cloud sync.
 - **Keep `ShotjoyCore` UI-free.** It has no AppKit dependency so its tests are
@@ -188,5 +187,5 @@ Sources/Shotjoy/                 menu-bar app (AppKit + SwiftUI)
 Tests/ShotjoyCoreTests/          core tests (23)
 Support/Info.plist                LSUIElement, bundle id, minimum macOS 14
 scripts/                          make-app, make-dmg, notarize, make-icon
-docs/                             AI install, distribution, reverse engineering
+docs/                             AI install and distribution
 ```

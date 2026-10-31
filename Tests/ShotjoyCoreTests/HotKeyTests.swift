@@ -2,7 +2,7 @@ import XCTest
 @testable import ShotjoyCore
 
 final class HotKeyTests: XCTestCase {
-    func testDefaultMatchesWeChat() {
+    func testDefaultShortcut() {
         let hotKey = HotKeyConfig.default
         XCTAssertEqual(hotKey.keyCode, 0)
         XCTAssertEqual(hotKey.modifiers, [.control, .command])

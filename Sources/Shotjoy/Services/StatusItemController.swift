@@ -46,7 +46,12 @@ final class StatusItemController: NSObject {
         if event?.type == .rightMouseUp || event?.modifierFlags.contains(.control) == true {
             showMenu(from: sender)
         } else {
-            onCapture?()
+            // Let the status-button click finish before activating the app and
+            // creating overlay windows. Otherwise Escape can be swallowed by
+            // the still-active menu-bar item.
+            DispatchQueue.main.async { [weak self] in
+                self?.onCapture?()
+            }
         }
     }
 
@@ -112,7 +117,11 @@ final class StatusItemController: NSObject {
         )
     }
 
-    @objc private func captureAction() { onCapture?() }
+    @objc private func captureAction() {
+        DispatchQueue.main.async { [weak self] in
+            self?.onCapture?()
+        }
+    }
     @objc private func pinAction() { onPinLast?() }
     @objc private func saveAction() { onSaveLast?() }
     @objc private func recognizeAction() { onRecognizeLast?() }

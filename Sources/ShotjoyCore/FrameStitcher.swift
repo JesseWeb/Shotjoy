@@ -2,11 +2,10 @@ import Foundation
 
 /// Row signatures used to align consecutive scrolling-capture frames.
 ///
-/// WeChat's long screenshot code ships `GrabWorker`, `SpliceWorker` and
-/// `OpenCVWorker`. Shotjoy keeps the same split: a grabber produces frames,
-/// this type finds the vertical overlap, and the app splices the full-resolution
-/// images. Doing the search on tiny per-row signatures keeps it fast and
-/// testable without OpenCV.
+/// Long screenshot capture is split into a grabber that produces frames, this
+/// type that finds the vertical overlap, and the app that splices the
+/// full-resolution images. Doing the search on tiny per-row signatures keeps it
+/// fast and testable.
 public struct RowSignature: Equatable, Sendable {
     public let width: Int
     public let height: Int

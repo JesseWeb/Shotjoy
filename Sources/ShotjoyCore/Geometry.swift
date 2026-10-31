@@ -24,7 +24,7 @@ public enum SelectionHandle: Int, CaseIterable, Sendable {
 
 public enum SelectionGeometry {
     /// A small rectangle around a handle, in the same coordinate space as
-    /// `rect`. Handles are drawn half outside the selection, like WeChat.
+    /// `rect`. Handles are drawn half outside the selection.
     public static func handleRect(_ handle: SelectionHandle, in rect: CGRect, size: CGFloat = 8) -> CGRect {
         let half = size / 2
         let points = handlePoints(in: rect)

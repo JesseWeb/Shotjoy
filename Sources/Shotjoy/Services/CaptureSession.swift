@@ -1,4 +1,5 @@
 import AppKit
+import Carbon
 import CoreGraphics
 import ShotjoyCore
 
@@ -38,6 +39,8 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
     private var dragState: DragState?
     private var draft: Annotation?
     private var keyMonitor: Any?
+    private var escapeHotKeyRef: EventHotKeyRef?
+    private var escapeHandlerRef: EventHandlerRef?
     private var textField: NSTextField?
     private var textAnchor: CGPoint = .zero
     private var textScreen: CapturedScreen?
@@ -106,12 +109,26 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
         }
         NSCursor.crosshair.set()
 
+        // Starting from the menu-bar item can leave the status button as the
+        // key window for one run-loop turn. Re-key after activation settles.
+        DispatchQueue.main.async { [weak self] in
+            guard let self, !self.windows.isEmpty else { return }
+            let index = self.screens.firstIndex(where: { $0.bounds.contains(self.cursorPoint) }) ?? 0
+            self.windows[index].makeKeyAndOrderFront(nil)
+            self.windows[index].makeFirstResponder(self.views[index])
+        }
+
 
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             guard let self else { return event }
             if self.textField != nil { return event }
             return self.handleKey(event) ? nil : event
         }
+
+        // Carbon hotkeys still work when the overlay is not the key window,
+        // which happens when capture is started from the menu-bar icon rather
+        // than from the global shortcut. Escape must always cancel.
+        registerEscapeHotKey()
 
         toolbarModel.onTool = { [weak self] tool in
             self?.activeTool = tool
@@ -143,6 +160,7 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
             NSEvent.removeMonitor(keyMonitor)
             self.keyMonitor = nil
         }
+        unregisterEscapeHotKey()
         removeTextField()
         toolbarController?.close()
         toolbarController = nil
@@ -757,6 +775,66 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
             return windows[index]
         }
         return windows.first
+    }
+
+    // MARK: - Escape hotkey
+
+    private func registerEscapeHotKey() {
+        guard escapeHotKeyRef == nil else { return }
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
+        let installStatus = InstallEventHandler(
+            GetApplicationEventTarget(),
+            { _, _, userData in
+                guard let userData else { return noErr }
+                let session = Unmanaged<CaptureSession>.fromOpaque(userData).takeUnretainedValue()
+                session.handleEscapeHotKey()
+                return noErr
+            },
+            1,
+            &eventType,
+            Unmanaged.passUnretained(self).toOpaque(),
+            &escapeHandlerRef
+        )
+        guard installStatus == noErr else { return }
+
+        let hotKeyID = EventHotKeyID(signature: OSType(0x5344_534B), id: 2)
+        let registerStatus = RegisterEventHotKey(
+            53, // Escape
+            0,
+            hotKeyID,
+            GetApplicationEventTarget(),
+            0,
+            &escapeHotKeyRef
+        )
+        if registerStatus != noErr {
+            if let handler = escapeHandlerRef {
+                RemoveEventHandler(handler)
+                escapeHandlerRef = nil
+            }
+        }
+    }
+
+    private func unregisterEscapeHotKey() {
+        if let ref = escapeHotKeyRef {
+            UnregisterEventHotKey(ref)
+            escapeHotKeyRef = nil
+        }
+        if let handler = escapeHandlerRef {
+            RemoveEventHandler(handler)
+            escapeHandlerRef = nil
+        }
+    }
+
+    private func handleEscapeHotKey() {
+        if textField != nil {
+            removeTextField()
+            redraw()
+        } else {
+            cancel()
+        }
     }
 
     // MARK: - Testing support

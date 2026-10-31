@@ -106,7 +106,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Shotjoy")
                         .font(.system(size: 18, weight: .semibold))
-                    Text(L10n.t("微信风格的截图工具", "A WeChat-style screenshot tool"))
+                    Text(L10n.t("快速、纯本地的截图工具", "A fast, local-only screenshot tool"))
                         .font(.system(size: 11.5))
                         .foregroundStyle(.secondary)
                 }
@@ -200,7 +200,7 @@ struct SettingsView: View {
                     .font(.system(size: 10))
                     .foregroundStyle(.tertiary)
                 Spacer()
-                Text(L10n.t("快捷键默认与微信一致：⌃⌘A", "Default shortcut matches WeChat: ⌃⌘A"))
+                Text(L10n.t("默认快捷键：⌃⌘A", "Default shortcut: ⌃⌘A"))
                     .font(.system(size: 10))
                     .foregroundStyle(.tertiary)
             }

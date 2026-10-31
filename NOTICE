@@ -4,10 +4,9 @@ Copyright (c) 2026 Shotjoy contributors
 This product is licensed under the GNU Affero General Public License v3.0.
 See LICENSE for the full text.
 
-Shotjoy is an independent, clean-room implementation of a screenshot workflow
-inspired by the behaviour of WeChat's screenshot feature. It is not affiliated
-with, endorsed by, or sponsored by Tencent. It contains no WeChat source code,
-assets, icons, sounds, or data formats.
+Shotjoy is an independent, clean-room project. It is not affiliated with,
+endorsed by, or sponsored by any other screenshot product, and it contains no
+code, assets, icons, or data formats from other screenshot tools.
 
 Apple, macOS, AppKit, SwiftUI, ScreenCaptureKit, and Vision are trademarks of
 Apple Inc.

@@ -31,7 +31,7 @@ public struct HotKeyConfig: Codable, Equatable, Sendable {
         self.modifiers = modifiers
     }
 
-    /// WeChat's macOS default: Control-Command-A.
+    /// Default screenshot shortcut: Control-Command-A.
     public static let `default` = HotKeyConfig(keyCode: 0, modifiers: [.control, .command])
 
     public var isUsable: Bool {

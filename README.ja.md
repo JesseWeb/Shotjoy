@@ -8,13 +8,13 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · **[日本語](README.ja.md)** · [Français](README.fr.md) · [Español](README.es.md)
 
-Shotjoy（截趣）は WeChat 風の macOS スクリーンショットツールです。SwiftPM で
+Shotjoy（截趣）は高速でローカル完結の macOS スクリーンショットツールです。SwiftPM で
 ソースからビルドでき、範囲/ウィンドウ撮影、注釈、スクロール撮影、デスクトップ
 へのピン留め、ローカル OCR、QR コード認識、AI 顔マスキングを備えます。
 メニューバー常駐型で Dock アイコンはなく、ネットワークへ何も送信しません。
 
-> 検索キーワード：macOS スクリーンショット、WeChat 風スクリーンショット、
-> 画面キャプチャ、注釈、スクロール撮影、ピン留め、OCR、QR コード、AI 顔マスキング。
+> 検索キーワード：macOS スクリーンショット、画面キャプチャ、注釈、スクロール撮影、
+> ピン留め、OCR、QR コード、AI 顔マスキング。
 
 **⌃⌘A**（Control-Command-A）を押し、範囲をドラッグするかウィンドウを
 クリックして、注釈を付けたらコピー・保存・デスクトップへのピン留めができます。
@@ -82,10 +82,6 @@ macOS では「画面収録」をシステム設定でユーザーが許可す�
 
 **Shotjoy** をオンにして、もう一度撮影してください。macOS のバージョンによっては
 Shotjoy の再起動が必要です。
-
-> **ShotDesk から改名しました。** Bundle ID が `dev.shotjoy.Shotjoy` に変わった
-> ため、macOS は Shotjoy を新しい App として扱い、画面収録の許可をもう一度
-> 求めます。ショートカットなどの設定は自動的に移行されます。
 
 スイッチがオンなのに権限を求められる場合は、署名が変わった可能性があります
 （ad-hoc ビルドでよくあります）。メニューバーのアイコン → **画面収録の権限を
@@ -160,29 +156,6 @@ Sources/Shotjoy/              AppKit/SwiftUI メニューバー App
   Windows/                     オーバーレイ、ツールバーパネル、ピンパネル
 ```
 
-### WeChat との関係
-
-詳細は [`docs/reverse-engineering.md`](docs/reverse-engineering.md) を参照。
-WeChat 4.1.5 のバイナリには `weshot::ScreenShoter`、
-`weshot::LongScreenShoter`、`GrabWorker`、`SpliceWorker`、`OpenCVWorker`、
-`SizeSelect`、`ColorPanel`、`PinWindow`、および `ShotSelection` という選択
-状態機械が含まれています。Shotjoy は公開 macOS API を使い、同じ観察可能な
-ワークフローを clean-room で実装したもので、WeChat のコード、素材、アイコン、
-データ形式は含みません。
-
-## 名前と検索
-
-`Shotjoy（截趣）` は *shot + joy* / *截 + 趣* のバイリンガルブランドです。
-一言紹介、GitHub の説明/Topics、中国語キーワード、確認して避けた同名製品は
-[`docs/branding.md`](docs/branding.md) にまとめています。
-
-## 検証状況
-
-[`STATUS.md`](STATUS.md) を参照。コアテスト、レンダリング、Bundle 署名、DMG
-レイアウト、Retina 撮影パイプライン、実際のショートカットオーバーレイ、選択/
-ツールバー、ブラシのライブプレビュー、OCR のエンドツーエンドを検証済みです。
-ピン留め、スクロール撮影、QR コード、AI マスキングは手動での確認を推奨します。
-
 ## 開発用フラグ
 
 Agent とデバッグ用の隠しフラグ：
@@ -197,4 +170,4 @@ open -a /Applications/Shotjoy.app --args --capture       # 実際の撮影を開
 ## ライセンス
 
 GNU AGPL-3.0。[`LICENSE`](LICENSE) を参照。クリーンルームプロジェクトなので、
-WeChat のコードや素材をコピーしないでください。
+他のスクリーンショットツールのコードや素材をコピーしないでください。

@@ -155,6 +155,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard !isCapturing else { return }
         isCapturing = true
 
+        // Activation must happen before the overlay windows are created,
+        // especially when capture was started from the menu-bar item.
+        NSApp.activate()
+        _ = NSRunningApplication.current.activate(options: [.activateAllWindows])
+
         if !ScreenCaptureService.hasPermission {
             let granted = ScreenCaptureService.requestPermission()
             if !granted {
@@ -754,8 +759,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let alert = NSAlert()
         alert.messageText = "Shotjoy（截趣）\(version)"
         alert.informativeText = L10n.t(
-            "一个受微信截图工作流启发的 macOS 截图工具。\n\n快捷键：\(preferences.shortcut.displayString)\n屏幕录制权限由 macOS 管理。",
-            "A macOS screenshot tool inspired by WeChat's capture workflow.\n\nShortcut: \(preferences.shortcut.displayString)\nScreen Recording is managed by macOS."
+            "一个快速、纯本地的 macOS 截图工具。\n\n快捷键：\(preferences.shortcut.displayString)\n屏幕录制权限由 macOS 管理。",
+            "A fast, local-only macOS screenshot tool.\n\nShortcut: \(preferences.shortcut.displayString)\nScreen Recording is managed by macOS."
         )
         alert.icon = NSApp.applicationIconImage
         alert.addButton(withTitle: "OK")
