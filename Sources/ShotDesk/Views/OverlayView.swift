@@ -59,7 +59,7 @@ final class OverlayView: NSView {
             context.saveGState()
             context.clip(to: localSelection)
             AnnotationRenderer.draw(
-                annotations: session.annotations.annotations,
+                annotations: session.visibleAnnotations,
                 in: context,
                 transform: { CGPoint(x: $0.x - self.screen.bounds.minX, y: $0.y - self.screen.bounds.minY) },
                 lineScale: 1,

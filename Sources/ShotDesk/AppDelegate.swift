@@ -107,6 +107,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
                 NSApp.terminate(nil)
             }
+        } else if arguments.contains("--analyze-test") {
+            Task { @MainActor in
+                guard let image = self.makeTestImage(width: 800, height: 600) else { return }
+                VisionAnalyzer.recognizeText(in: image) { text in
+                    self.copyText(text)
+                    self.showTextPreview(text, title: "OCR Test")
+                }
+            }
+        } else if arguments.contains("--ocr-test") {
+            Task { @MainActor in
+                guard let image = self.makeTestImage(width: 800, height: 600) else {
+                    NSApp.terminate(nil)
+                    return
+                }
+                VisionAnalyzer.recognizeText(in: image) { text in
+                    try? "text=\(text)"
+                        .write(to: URL(fileURLWithPath: "/tmp/shotdesk-ocr-test.txt"), atomically: true, encoding: .utf8)
+                    NSApp.terminate(nil)
+                }
+            }
         } else if arguments.contains("--self-test") {
             runRenderSelfTest()
             NSApp.terminate(nil)
@@ -541,6 +561,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         session.start()
         session.showToolbarForTesting()
+        if let first = screens.first {
+            let selection = CGRect(
+                x: first.bounds.minX + first.bounds.width * 0.18,
+                y: first.bounds.minY + first.bounds.height * 0.22,
+                width: first.bounds.width * 0.56,
+                height: first.bounds.height * 0.42
+            )
+            session.setDraftForTesting(
+                Annotation(
+                    kind: .pen,
+                    start: CGPoint(x: selection.minX + 40, y: selection.minY + 80),
+                    end: .zero,
+                    points: [
+                        CGPoint(x: selection.minX + 40, y: selection.minY + 80),
+                        CGPoint(x: selection.minX + 220, y: selection.minY + 180),
+                        CGPoint(x: selection.minX + 420, y: selection.minY + 120)
+                    ],
+                    color: .green,
+                    lineWidth: 4
+                )
+            )
+        }
     }
 
     private func makeDemoScreenImage(width: Int, height: Int, index: Int, name: String) -> CGImage? {
@@ -693,6 +735,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         context.setFillColor(NSColor.black.cgColor)
         context.fill(CGRect(x: 0, y: 0, width: CGFloat(width), height: 24))
         context.fill(CGRect(x: 0, y: CGFloat(height) - 24, width: CGFloat(width), height: 24))
+
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: CGFloat(height) * 0.07, weight: .bold),
+            .foregroundColor: NSColor.white
+        ]
+        NSAttributedString(string: "ShotDesk 文字识别 Test 123", attributes: attributes)
+            .draw(at: CGPoint(x: CGFloat(width) * 0.08, y: CGFloat(height) * 0.42))
+        NSGraphicsContext.restoreGraphicsState()
         return context.makeImage()
     }
 

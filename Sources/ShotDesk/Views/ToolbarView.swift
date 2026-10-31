@@ -43,19 +43,13 @@ struct ToolbarView: View {
                 model.onAIMask?()
             }
 
-            Menu {
-                Button(L10n.recognizeText) { model.onAnalyze?(.text) }
-                Button(L10n.scanQRCode) { model.onAnalyze?(.qrCode) }
-            } label: {
-                Image(systemName: "text.viewfinder")
-                    .font(.system(size: 14, weight: .medium))
-                    .frame(width: 28, height: 28)
-                    .contentShape(Rectangle())
+            toolButton(symbol: "text.viewfinder", title: L10n.recognizeText) {
+                model.onAnalyze?(.text)
             }
-            .menuStyle(.borderlessButton)
-            .menuIndicator(.hidden)
-            .help(L10n.recognize)
-            .frame(width: 30)
+
+            toolButton(symbol: "qrcode.viewfinder", title: L10n.scanQRCode) {
+                model.onAnalyze?(.qrCode)
+            }
 
             toolButton(symbol: "arrow.up.and.down.text.horizontal", title: L10n.scrollingCapture) {
                 model.onScroll?()

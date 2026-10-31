@@ -47,6 +47,8 @@ final class PreviewWindowController {
             defer: false
         )
         window.title = model.title.isEmpty ? L10n.longScreenshot : model.title
+        window.level = .floating
+        window.collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
         window.center()
         window.isReleasedWhenClosed = false
         window.contentView = NSHostingView(rootView: PreviewView(model: model))

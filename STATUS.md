@@ -14,7 +14,12 @@
   region rendered to **1600×1188** with an annotation. This confirms the
   Retina sizing, crop, and final-render path.
 - `--demo-overlay`: the synthetic overlay window renders the dimmed desktop,
-  bright selection, handles, annotations, and the toolbar (captured per-window).
+  bright selection, handles, annotations, a live draft stroke, and the toolbar
+  (captured per-window). This verifies that arrow/pen/mosaic drafts are visible
+  before mouse-up.
+- `--ocr-test`: Vision recognized `ShotDesk 文字识别 Test 123`.
+- `--analyze-test`: the OCR result was copied to the clipboard and shown in the
+  floating result window (captured per-window).
 - `--status`: `hotkeyRegistered=true`, shortcut `⌃⌘A`, bundle id
   `dev.shotdesk.ShotDesk`, path `/Applications/ShotDesk.app`.
 

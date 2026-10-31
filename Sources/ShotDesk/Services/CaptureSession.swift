@@ -751,4 +751,8 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
     func showToolbarForTesting() {
         showToolbar()
     }
+
+    func setDraftForTesting(_ annotation: Annotation) {
+        draft = annotation
+    }
 }
