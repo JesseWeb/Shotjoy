@@ -2,7 +2,9 @@ import AppKit
 import SwiftUI
 
 final class ToolbarPanel: NSPanel {
-    override var canBecomeKey: Bool { false }
+    // Keep the overlay as the key window for Esc/Return, but allow the panel
+    // to take key focus temporarily if a control actually needs it.
+    override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { false }
 }
 
