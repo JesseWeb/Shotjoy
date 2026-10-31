@@ -1,0 +1,211 @@
+# Shotjoy（截趣）
+
+**Des captures d'écran, avec plaisir.**
+
+[![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue)](https://www.apple.com/macos/) [![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange)](https://swift.org) [![Release](https://img.shields.io/github/v/release/JesseWeb/Shotjoy)](https://github.com/JesseWeb/Shotjoy/releases) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
+
+![Shotjoy : l'overlay de capture](docs/screenshot.png)
+
+[English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · **[Français](README.fr.md)** · [Español](README.es.md)
+
+Shotjoy（截趣）est un outil de capture d'écran macOS dans le style de WeChat,
+compilé depuis les sources avec SwiftPM : capture de zone ou de fenêtre,
+annotations, capture défilante, épinglage sur le bureau, OCR local, détection de
+QR codes et masquage de visages par IA. Il vit dans la barre des menus, n'a pas
+d'icône dans le Dock et n'envoie rien sur le réseau.
+
+> Mots-clés : capture d'écran macOS, capture style WeChat, annotation de capture,
+> capture défilante, épinglage, OCR, QR code, masquage de visages.
+
+Appuyez sur **⌃⌘A** (Control-Command-A), faites glisser une zone ou cliquez une
+fenêtre, annotez, puis copiez, enregistrez ou épinglez la capture sur le bureau.
+
+## Téléchargement
+
+[**Dernière version →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
+
+Le DMG de la release est signé ad-hoc (non notarié). Au premier lancement,
+faites un clic droit sur Shotjoy → **Ouvrir** → **Ouvrir**, puis accordez
+l'autorisation **Enregistrement de l'écran**. Vous pouvez aussi compiler depuis
+les sources : l'app portera alors votre propre signature.
+
+## Fonctionnalités
+
+- **Raccourci global** — `⌃⌘A` par défaut, modifiable dans les réglages. Carbon
+  `RegisterEventHotKey`, sans autorisation Accessibilité.
+- **Overlay plein écran** — bureau assombri, sélection lumineuse, huit poignées
+  de redimensionnement, réticule, loupe pixel, couleur et coordonnées en direct.
+- **Capture de fenêtre** — survolez la fenêtre au premier plan, cliquez pour la
+  capturer.
+- **Annotations** — déplacement/sélection, rectangle, ellipse, flèche, pinceau,
+  mosaïque, texte, annulation, palette de six couleurs et masquage de visages par
+  IA (avec un toast « aucun visage détecté » au lieu d'un échec silencieux).
+- **Copier / enregistrer / épingler** — `⌘C`, `⌘S` ou le bouton d'épingle. Les
+  captures épinglées flottent au-dessus de toutes les apps ; copie, enregistrement,
+  déplacement et fermeture par clic droit.
+- **Capture défilante** — sélectionnez une zone, cliquez l'outil de défilement,
+  faites défiler la page, puis cliquez Terminé. Les images sont alignées et
+  assemblées localement.
+- **OCR et QR codes** — Apple Vision, entièrement sur l'appareil : reconnaît le
+  texte ou un QR code/code-barres et copie le résultat.
+- **Multi-écran** — capture chaque écran en résolution Retina native et accepte
+  les sélections qui traversent plusieurs écrans.
+- **App de barre des menus** — `LSUIElement`, lancement à l'ouverture de session,
+  pas d'icône dans le Dock.
+
+## Prérequis
+
+- macOS 14 Sonoma ou plus récent (API ScreenCaptureKit)
+- Xcode 15+ avec le SDK macOS (`xcodebuild -version` doit fonctionner)
+- Aucune dépendance tierce, aucun registre de paquets, aucun réseau à l'exécution
+
+## Compilation et installation
+
+```sh
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
+cd ~/Developer/Shotjoy
+swift test                       # tests cœur : géométrie et assemblage
+./scripts/make-app.sh release    # -> dist/Shotjoy.app
+cp -R dist/Shotjoy.app /Applications/
+open /Applications/Shotjoy.app
+```
+
+Créer un DMG à glisser dans Applications :
+
+```sh
+./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.0.dmg
+```
+
+`make-app.sh` choisit l'identité de signature disponible :
+`SHOTJOY_SIGN_IDENTITY`, puis Developer ID, Apple Development, puis ad-hoc. Le
+DMG est signé avec la même identité quand c'est possible. La notarisation est
+optionnelle et documentée dans [`docs/distribution.md`](docs/distribution.md).
+
+## Premier lancement : autorisation d'enregistrement de l'écran
+
+macOS n'autorise l'enregistrement de l'écran que depuis Réglages Système. À la
+première capture, Shotjoy demande l'autorisation et ouvre :
+
+**Réglages Système → Confidentialité et sécurité → Enregistrement de l'écran**
+
+Activez **Shotjoy**, puis recommencez la capture. Certaines versions de macOS
+demandent de quitter et relancer Shotjoy après l'autorisation.
+
+> **Renommé depuis ShotDesk ?** L'identifiant du bundle est devenu
+> `dev.shotjoy.Shotjoy` : macOS considère Shotjoy comme une nouvelle app et
+> redemande l'autorisation une fois. Les raccourcis et préférences sont migrés
+> automatiquement.
+
+Si l'interrupteur est déjà activé mais que Shotjoy redemande l'autorisation, la
+signature a probablement changé (fréquent en ad-hoc). Utilisez **icône de la
+barre des menus → Réparer l'autorisation d'enregistrement de l'écran…**, puis
+autorisez à nouveau. L'app exécute `tccutil reset ScreenCapture` pour son
+identifiant et rouvre le panneau.
+
+## Utilisation
+
+| Action | Comment |
+|---|---|
+| Capturer | `⌃⌘A`, ou clic gauche sur l'icône de la barre des menus |
+| Sélectionner une zone | Faire glisser sur l'écran |
+| Capturer une fenêtre | Cliquer la fenêtre mise en évidence |
+| Déplacer la sélection | Choisir l'outil main/pointeur (premier bouton, actif par défaut), puis glisser dans la sélection |
+| Redimensionner | Faire glisser l'une des huit poignées |
+| Rectangle / ellipse / flèche / pinceau / mosaïque / texte | Choisir un outil, puis glisser ; aperçu en direct |
+| Changer la couleur | Cliquer une pastille ; la couleur active a un anneau blanc et une coche |
+| Annuler | `⌘Z` ou le bouton annuler |
+| Copier et fermer | `Return`, `⌘C` ou **Terminé** |
+| Enregistrer en PNG | `⌘S` ou le bouton enregistrer |
+| Épingler sur le bureau | Le bouton d'épingle |
+| Annuler la capture | `Esc` ou le bouton fermer |
+| Capture défilante | Sélection → outil défilement → défiler → Terminé |
+| OCR / QR code | Boutons texte ou QR code de la barre d'outils |
+| Masquage de visages IA | Bouton visage de la barre d'outils |
+| Changer le raccourci | Icône de la barre des menus → Réglages… → Enregistrer |
+| Dernière capture | Icône de la barre des menus → Épingler / Enregistrer / Reconnaître |
+
+L'icône de la barre des menus est un viseur. Clic gauche pour capturer, clic
+droit pour le menu.
+
+## Où sont les données
+
+Shotjoy ne stocke presque rien :
+
+- Préférences : `~/Library/Preferences/dev.shotjoy.Shotjoy.plist`
+- Captures : uniquement où vous les enregistrez (presse-papiers par défaut)
+- Élément de connexion : `SMAppService`, avec repli LaunchAgent
+- Aucune base d'historique, aucun envoi, aucune analytique
+
+Désinstallation :
+
+```sh
+pkill -x Shotjoy
+rm -rf /Applications/Shotjoy.app
+defaults delete dev.shotjoy.Shotjoy 2>/dev/null || true
+tccutil reset ScreenCapture dev.shotjoy.Shotjoy
+```
+
+## Architecture
+
+```
+Sources/ShotjoyCore/          logique pure, testable sans serveur graphique
+  Geometry.swift               coordonnées globales, poignées, limites
+  Annotation.swift             modèle d'annotation + pile d'annulation
+  FrameStitcher.swift          recherche de chevauchement pour captures longues
+  HotKey.swift                 modèle de raccourci et noms d'affichage
+  ImageNaming.swift            noms de fichiers PNG stables
+
+Sources/Shotjoy/              app de barre des menus AppKit/SwiftUI
+  AppDelegate.swift            cycle de vie, capture, OCR/QR, autorisations
+  Services/
+    ScreenCaptureService.swift ScreenCaptureKit + repli CoreGraphics
+    CaptureSession.swift       machine d'état de l'overlay et rendu final
+    WindowLocator.swift        fenêtre au premier plan sous le curseur
+    ScrollingCaptureController.swift  capture et assemblage des images
+    VisionAnalyzer.swift       OCR, codes-barres et visages en local
+    AnnotationRenderer.swift   dessin partagé overlay/image finale
+    HotKeyManager.swift        raccourci global Carbon
+    StatusItemController.swift icône de la barre des menus
+  Views/                       overlay, barre d'outils, réglages, HUD, aperçu
+  Windows/                     fenêtre overlay, panneau barre d'outils, épingle
+```
+
+### Relation avec WeChat
+
+Voir [`docs/reverse-engineering.md`](docs/reverse-engineering.md). En bref, le
+binaire WeChat 4.1.5 contient `weshot::ScreenShoter`,
+`weshot::LongScreenShoter`, `GrabWorker`, `SpliceWorker`, `OpenCVWorker`,
+`SizeSelect`, `ColorPanel`, `PinWindow`, et une machine d'état de sélection
+nommée `ShotSelection`. Shotjoy est une implémentation clean-room du même
+workflow observable avec des API macOS publiques. Il ne contient aucun code,
+asset, icône ou format de données de WeChat.
+
+## Nom et recherche
+
+`Shotjoy（截趣）` est une marque bilingue : *shot + joy* / *截 + 趣*. Les
+accroches, la description GitHub, les topics, les mots-clés chinois et les noms
+déjà utilisés que nous avons évités sont dans [`docs/branding.md`](docs/branding.md).
+
+## État de vérification
+
+Voir [`STATUS.md`](STATUS.md). Les tests cœur, le rendu, la signature du bundle,
+la disposition du DMG, le pipeline Retina, le raccourci réel, la sélection et la
+barre d'outils, l'aperçu du pinceau et l'OCR de bout en bout sont vérifiés. Un
+passage manuel reste conseillé pour l'épingle, la capture défilante, le QR code
+et le masquage IA.
+
+## Options de développement
+
+Options cachées pour les agents et le débogage :
+
+```sh
+open -a /Applications/Shotjoy.app --args --status        # écrit /tmp/shotjoy-status.txt
+open -a /Applications/Shotjoy.app --args --self-test     # génère /tmp/shotjoy-render-test.png
+open -a /Applications/Shotjoy.app --args --demo-overlay  # overlay synthétique, sans autorisation
+open -a /Applications/Shotjoy.app --args --capture       # démarre une vraie capture
+```
+
+## Licence
+
+GNU AGPL-3.0. Voir [`LICENSE`](LICENSE). Projet clean-room : ne copiez pas le
+code ou les ressources de WeChat.

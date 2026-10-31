@@ -2,6 +2,12 @@
 
 **Screenshots, with joy.** 截图，也可以很有趣。
 
+[![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue)](https://www.apple.com/macos/) [![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange)](https://swift.org) [![Release](https://img.shields.io/github/v/release/JesseWeb/Shotjoy)](https://github.com/JesseWeb/Shotjoy/releases) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
+
+![Shotjoy overlay](docs/screenshot.png)
+
+**English** · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Français](README.fr.md) · [Español](README.es.md)
+
 Shotjoy（截趣）is a WeChat-style macOS screenshot tool built from source with
 SwiftPM: region/window capture, screenshot annotation, scrolling screenshots,
 pin-to-desktop, on-device OCR, QR detection, and AI face masking. It lives in
@@ -21,8 +27,6 @@ then copy, save, or pin it to the desktop.
 The release DMG is ad-hoc signed (not notarized). On first launch, right-click
 Shotjoy → **Open** → **Open**, then grant Screen Recording. Prefer building from
 source? See below — then the app carries your own signature.
-
-![Shotjoy overlay](docs/screenshot.png)
 
 ## Features
 
@@ -108,7 +112,7 @@ its own bundle id and reopens the pane.
 | Pin to desktop | The pin button |
 | Cancel | `Esc` or the close button |
 | Scrolling screenshot | Select region → scroll tool → scroll → Done |
-| OCR / QR | The scan menu in the toolbar |
+| OCR / QR | The text-recognition and QR buttons in the toolbar |
 | AI mask faces | The face button in the toolbar |
 | Change shortcut | Menu-bar icon → Settings… → Record |
 | Last screenshot | Menu-bar icon → Pin / Save / Recognize |

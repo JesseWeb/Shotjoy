@@ -1,0 +1,193 @@
+# Shotjoy（截趣）
+
+**截图，也可以很有趣。**
+
+[![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue)](https://www.apple.com/macos/) [![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange)](https://swift.org) [![Release](https://img.shields.io/github/v/release/JesseWeb/Shotjoy)](https://github.com/JesseWeb/Shotjoy/releases) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
+
+![Shotjoy 覆盖层](docs/screenshot.png)
+
+[English](README.md) · **[简体中文](README.zh-CN.md)** · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Français](README.fr.md) · [Español](README.es.md)
+
+Shotjoy（截趣）是一款微信风格的 macOS 截图工具，使用 SwiftPM 从源码构建：
+支持区域/窗口截图、截图标注、滚动截图、桌面贴图、本地 OCR、二维码识别和
+AI 人脸打码。它只住在菜单栏，没有 Dock 图标，也不会把任何内容发送到网络。
+
+> 搜索关键词：macOS 截图工具、微信风格截图、截图标注、滚动截图、贴图、
+> 文字识别、二维码识别、屏幕截图、Mac 截图。
+
+按 **⌃⌘A**（Control-Command-A），拖动选择区域或单击窗口，完成标注后复制、
+保存或贴到桌面。
+
+## 下载
+
+[**最新 Release →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
+
+Release 里的 DMG 使用 ad-hoc 签名（未公证）。首次启动请右键 Shotjoy →
+**打开** → **打开**，然后授予「屏幕录制」权限。也可以从源码构建，这样 App
+会带上你自己的签名。
+
+## 功能
+
+- **全局快捷键** — 默认 `⌃⌘A`，可在设置中修改。使用 Carbon
+  `RegisterEventHotKey`，不需要辅助功能权限。
+- **全屏覆盖层** — 桌面变暗、选区高亮、八个缩放控制点、十字准星、像素放大镜、
+  实时颜色和坐标显示。
+- **窗口截图** — 鼠标悬停时高亮最上层窗口，单击即可截取。
+- **标注** — 移动/选择、矩形、椭圆、箭头、画笔、马赛克、文字、撤销、可见的
+  六色色板，以及 AI 人脸打码（未检测到人脸时会明确提示，而不是静默失败）。
+- **复制 / 保存 / 贴图** — `⌘C`、`⌘S` 或贴图按钮。贴图会悬浮在所有 App 之上，
+  可复制、保存、拖动，右键关闭。
+- **滚动截图** — 选择区域，点击滚动工具，滚动页面，然后点完成。帧在本地对齐并拼接。
+- **OCR 和二维码** — 使用 Apple Vision，全程本地：识别截图中的文字或二维码/条码，
+  并复制结果。
+- **多显示器** — 以原生 Retina 分辨率截取每块屏幕，支持跨屏选区。
+- **菜单栏应用** — `LSUIElement`，支持开机启动，没有 Dock 图标。
+
+## 系统要求
+
+- macOS 14 Sonoma 或更新（ScreenCaptureKit 截图 API）
+- Xcode 15+ 和 macOS SDK（`xcodebuild -version` 必须可用）
+- 无第三方依赖、无包管理器、无运行时网络访问
+
+## 构建与安装
+
+```sh
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
+cd ~/Developer/Shotjoy
+swift test                       # 核心几何/拼接测试
+./scripts/make-app.sh release    # -> dist/Shotjoy.app
+cp -R dist/Shotjoy.app /Applications/
+open /Applications/Shotjoy.app
+```
+
+构建可拖入「应用程序」的 DMG：
+
+```sh
+./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.0.dmg
+```
+
+`make-app.sh` 会按顺序选择签名身份：`SHOTJOY_SIGN_IDENTITY`、Developer ID、
+Apple Development、ad-hoc。DMG 也会尽量使用相同身份签名。公证是可选项，
+详见 [`docs/distribution.md`](docs/distribution.md)。
+
+## 首次运行：屏幕录制权限
+
+macOS 只允许用户在系统设置中授予「屏幕录制」。第一次截图时，Shotjoy 会请求
+权限并打开：
+
+**系统设置 → 隐私与安全性 → 屏幕录制**
+
+打开 **Shotjoy** 的开关，然后重新截图。部分 macOS 版本需要退出并重新打开
+Shotjoy 才会生效。
+
+> **从 ShotDesk 改名而来？** Bundle ID 已变为 `dev.shotjoy.Shotjoy`，macOS
+> 会把 Shotjoy 当作新 App，需要重新授予一次屏幕录制权限。快捷键和行为偏好
+> 会自动迁移。
+
+如果开关已经打开但 Shotjoy 仍然提示权限，通常是签名变化（ad-hoc 构建常见）。
+点击菜单栏图标 → **修复屏幕录制权限…**，然后重新授权。App 会为自己的
+Bundle ID 执行 `tccutil reset ScreenCapture` 并重新打开设置页。
+
+## 使用
+
+| 操作 | 方法 |
+|---|---|
+| 截图 | `⌃⌘A`，或左键单击菜单栏图标 |
+| 选择区域 | 在屏幕上拖动 |
+| 截取窗口 | 单击高亮的窗口 |
+| 移动选区 | 选择手形/指针工具（工具栏第一个按钮，默认选中），在选区内拖动 |
+| 缩放选区 | 拖动八个控制点之一 |
+| 矩形 / 椭圆 / 箭头 / 画笔 / 马赛克 / 文字 | 选择工具后拖动；绘制过程实时预览 |
+| 修改颜色 | 点击色板圆点；当前颜色会显示白圈和对勾 |
+| 撤销 | `⌘Z` 或撤销按钮 |
+| 复制并关闭 | `Return`、`⌘C` 或「完成」 |
+| 保存为 PNG | `⌘S` 或保存按钮 |
+| 贴到桌面 | 贴图按钮 |
+| 取消 | `Esc` 或关闭按钮 |
+| 滚动截图 | 选择区域 → 滚动工具 → 滚动 → 完成 |
+| OCR / 二维码 | 工具栏的文字识别或二维码按钮 |
+| AI 人脸打码 | 工具栏的人脸打码按钮 |
+| 修改快捷键 | 菜单栏图标 → 设置… → 录制 |
+| 上一张截图 | 菜单栏图标 → 贴图 / 保存 / 识别文字 |
+
+菜单栏图标是取景框。左键开始截图，右键打开菜单。
+
+## 数据位置
+
+Shotjoy 几乎不保存东西：
+
+- 偏好设置：`~/Library/Preferences/dev.shotjoy.Shotjoy.plist`
+- 截图：只保存在你选择的位置（默认复制到剪贴板）
+- 登录项：`SMAppService`，失败时回退到 LaunchAgent
+- 没有历史数据库、没有上传、没有统计
+
+卸载：
+
+```sh
+pkill -x Shotjoy
+rm -rf /Applications/Shotjoy.app
+defaults delete dev.shotjoy.Shotjoy 2>/dev/null || true
+tccutil reset ScreenCapture dev.shotjoy.Shotjoy
+```
+
+## 架构
+
+```
+Sources/ShotjoyCore/          纯逻辑，无需窗口服务器即可测试
+  Geometry.swift               全局坐标、选区控制点、边界约束
+  Annotation.swift             标注模型 + 撤销栈
+  FrameStitcher.swift          长截图的行签名重叠匹配
+  HotKey.swift                 快捷键模型和显示名称
+  ImageNaming.swift            稳定的 PNG 文件名
+
+Sources/Shotjoy/              AppKit/SwiftUI 菜单栏 App
+  AppDelegate.swift            生命周期、截图流程、OCR/二维码、权限
+  Services/
+    ScreenCaptureService.swift ScreenCaptureKit + CoreGraphics 回退
+    CaptureSession.swift       覆盖层状态机和最终渲染
+    WindowLocator.swift        鼠标下最上层窗口
+    ScrollingCaptureController.swift  抓帧和拼接
+    VisionAnalyzer.swift       本地 OCR、条码和人脸检测
+    AnnotationRenderer.swift   覆盖层/最终图共用绘制
+    HotKeyManager.swift        Carbon 全局快捷键
+    StatusItemController.swift 菜单栏图标
+  Views/                       覆盖层、工具栏、设置、HUD、预览
+  Windows/                     覆盖层窗口、工具栏面板、贴图面板
+```
+
+### 与微信的关系
+
+详见 [`docs/reverse-engineering.md`](docs/reverse-engineering.md)。简单来说，
+WeChat 4.1.5 的二进制中包含 `weshot::ScreenShoter`、
+`weshot::LongScreenShoter`、`GrabWorker`、`SpliceWorker`、`OpenCVWorker`、
+`SizeSelect`、`ColorPanel`、`PinWindow`，以及名为 `ShotSelection` 的选区状态机。
+Shotjoy 是用公开 macOS API 对同一套可观察流程的 clean-room 实现，不包含微信
+代码、素材、图标或数据格式。
+
+## 名称与搜索
+
+`Shotjoy（截趣）` 是中英双语品牌：*shot + joy* / *截 + 趣*。一句话介绍、
+GitHub 描述/Topics、中文关键词，以及已排查并避开的同名产品，见
+[`docs/branding.md`](docs/branding.md)。
+
+## 验证状态
+
+见 [`STATUS.md`](STATUS.md)。核心测试、渲染、Bundle 签名、DMG 布局、Retina
+截图流程、真实快捷键覆盖层、选区/工具栏、画笔实时预览、OCR 端到端都已验证。
+贴图、滚动截图、二维码和 AI 打码仍建议手动过一遍。
+
+## 开发调试参数
+
+给 Agent 和调试使用的隐藏参数：
+
+```sh
+open -a /Applications/Shotjoy.app --args --status        # 写入 /tmp/shotjoy-status.txt
+open -a /Applications/Shotjoy.app --args --self-test     # 渲染 /tmp/shotjoy-render-test.png
+open -a /Applications/Shotjoy.app --args --demo-overlay  # 合成覆盖层，无需权限
+open -a /Applications/Shotjoy.app --args --capture       # 立即开始真实截图
+```
+
+## 许可证
+
+GNU AGPL-3.0。见 [`LICENSE`](LICENSE)。这是 clean-room 项目，请勿把微信代码或
+素材复制进来。
