@@ -147,6 +147,12 @@ shipped WeChat 4.1.5 binary contains `weshot::ScreenShoter`,
 workflow using public macOS APIs. It contains no WeChat code, assets, icons, or
 data formats.
 
+## Verification status
+
+See [`STATUS.md`](STATUS.md). Core tests, rendering, bundle signing, DMG layout,
+and the Retina capture pipeline are verified. Interactive overlay/permission
+testing needs an unlocked screen.
+
 ## Development flags
 
 Hidden flags for agents and debugging:

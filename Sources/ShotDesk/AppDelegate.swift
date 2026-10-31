@@ -77,6 +77,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     if let first = screens.first,
                        let data = ImageExporter.pngData(first.image) {
                         try? data.write(to: URL(fileURLWithPath: "/tmp/shotdesk-capture-test.png"))
+
+                        let session = CaptureSession(screens: [first])
+                        let selection = CGRect(
+                            x: first.bounds.midX - min(400, first.bounds.width / 3),
+                            y: first.bounds.midY - min(300, first.bounds.height / 3),
+                            width: min(800, first.bounds.width * 0.66),
+                            height: min(600, first.bounds.height * 0.66)
+                        )
+                        session.setSelectionForTesting(selection)
+                        session.addAnnotationForTesting(
+                            Annotation(
+                                kind: .rectangle,
+                                start: CGPoint(x: selection.minX + 20, y: selection.minY + 20),
+                                end: CGPoint(x: selection.maxX - 20, y: selection.maxY - 20),
+                                color: .yellow
+                            )
+                        )
+                        if let rendered = session.renderFinalImage(includeAnnotations: true),
+                           let renderedData = ImageExporter.pngData(rendered) {
+                            try? renderedData.write(to: URL(fileURLWithPath: "/tmp/shotdesk-render-real.png"))
+                        }
                     }
                     try? "captured=\(screens.count) \(screens.map { "\($0.image.width)x\($0.image.height)@\($0.scale)" }.joined(separator: " | "))"
                         .write(to: URL(fileURLWithPath: "/tmp/shotdesk-capture-test.txt"), atomically: true, encoding: .utf8)

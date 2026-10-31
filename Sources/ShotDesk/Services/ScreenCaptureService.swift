@@ -68,7 +68,7 @@ enum ScreenCaptureService {
 
     /// Capture a rectangle in global Quartz coordinates. Used by scrolling
     /// capture, where the selection is always on one display.
-    static func capture(rect: CGRect) throws -> CGImage {
+    static func capture(rect: CGRect) async throws -> CGImage {
         guard hasPermission else { throw ScreenCaptureError.permissionDenied }
         guard let screen = NSScreen.screens.first(where: {
             displayBounds(for: $0).contains(CGPoint(x: rect.midX, y: rect.midY))
@@ -86,7 +86,7 @@ enum ScreenCaptureService {
         // On macOS 15.2+ ScreenCaptureKit can capture an arbitrary rect and
         // returns a native-resolution image. The legacy display API is only a
         // fallback for older systems (it is obsoleted in the macOS 15 SDK).
-        if #available(macOS 15.2, *), let image = try? captureRectWithScreenCaptureKit(rect) {
+        if #available(macOS 15.2, *), let image = try? await captureRectWithScreenCaptureKit(rect) {
             return image
         }
         if let image = CGDisplayCreateImage(displayID, rect: local) {
@@ -140,19 +140,16 @@ enum ScreenCaptureService {
     }
 
     @available(macOS 15.2, *)
-    private static func captureRectWithScreenCaptureKit(_ rect: CGRect) throws -> CGImage {
-        let semaphore = DispatchSemaphore(value: 0)
-        var result: Result<CGImage, Error> = .failure(ScreenCaptureError.noImage)
-        SCScreenshotManager.captureImage(in: rect) { image, error in
-            if let image {
-                result = .success(image)
-            } else {
-                result = .failure(error ?? ScreenCaptureError.noImage)
+    private static func captureRectWithScreenCaptureKit(_ rect: CGRect) async throws -> CGImage {
+        try await withCheckedThrowingContinuation { continuation in
+            SCScreenshotManager.captureImage(in: rect) { image, error in
+                if let image {
+                    continuation.resume(returning: image)
+                } else {
+                    continuation.resume(throwing: error ?? ScreenCaptureError.noImage)
+                }
             }
-            semaphore.signal()
         }
-        _ = semaphore.wait(timeout: .now() + 8)
-        return try result.get()
     }
 
     @available(macOS 14.0, *)

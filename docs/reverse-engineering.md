@@ -37,7 +37,6 @@ weshot::ScreenShoter
 weshot::LongScreenShoter
 weshot::WeShot
 weshot::WeShotEditor
-weshot::WeShotEditorSubmenu
 weshot::WeShotLongScreenshot
 weshot::GrabWorker
 weshot::SpliceWorker

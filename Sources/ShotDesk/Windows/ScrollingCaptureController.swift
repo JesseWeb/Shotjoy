@@ -81,14 +81,12 @@ final class ScrollingCaptureController {
         guard !isCapturingFrame, !isFinished else { return }
         isCapturingFrame = true
         let rect = selection
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            let image = try? ScreenCaptureService.capture(rect: rect)
-            DispatchQueue.main.async {
-                guard let self, !self.isFinished else { return }
-                self.isCapturingFrame = false
-                guard let image else { return }
-                self.add(image)
-            }
+        Task { @MainActor [weak self] in
+            let image = try? await ScreenCaptureService.capture(rect: rect)
+            guard let self, !self.isFinished else { return }
+            self.isCapturingFrame = false
+            guard let image else { return }
+            self.add(image)
         }
     }
 

@@ -163,9 +163,11 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
             let next = WindowLocator.windowRect(at: point)
             if next != hoverWindowRect {
                 hoverWindowRect = next
-                redraw()
             }
         }
+        // The crosshair and magnifier follow the pointer, so every move needs
+        // a redraw even when the hovered window did not change.
+        redraw()
         updateCursor(at: point)
     }
 
@@ -176,6 +178,10 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
         if clickCount >= 2, let selection, selection.contains(point) {
             finish(.copy)
             return
+        }
+
+        if selection == nil, hoverWindowRect == nil {
+            hoverWindowRect = WindowLocator.windowRect(at: point)
         }
 
         if let selection {
@@ -204,6 +210,7 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
         selection = CGRect(origin: point, size: .zero)
         hoverWindowRect = nil
         dragState = .selecting(start: point)
+        updateCursor(at: point)
         redraw()
     }
 
