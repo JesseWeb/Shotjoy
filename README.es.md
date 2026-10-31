@@ -8,7 +8,8 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Français](README.fr.md) · **[Español](README.es.md)**
 
-Shotjoy（截趣）es una herramienta de captura de pantalla para macOS rápida y totalmente local, compilada desde el código fuente con SwiftPM: captura de región o ventana,
+Shotjoy（截趣）es una herramienta de captura de pantalla para macOS rápida y
+totalmente local, compilada localmente con Xcode: captura de región o ventana,
 anotaciones, captura con desplazamiento, fijar en el escritorio, OCR local,
 detección de códigos QR y enmascarado de caras con IA. Vive en la barra de menús,
 no tiene icono en el Dock y no envía nada por la red.
@@ -25,7 +26,7 @@ añade anotaciones y luego copia, guarda o fija la captura en el escritorio.
 
 El DMG de la release está firmado ad-hoc (sin notarizar). En el primer inicio,
 haz clic derecho en Shotjoy → **Abrir** → **Abrir**, y concede el permiso
-**Grabación de pantalla**. También puedes compilar desde el código fuente: la app
+**Grabación de pantalla**. También puedes compilarla tú mismo: la app
 llevará tu propia firma.
 
 ## Funciones
@@ -176,5 +177,4 @@ open -a /Applications/Shotjoy.app --args --capture       # inicia una captura re
 
 ## Licencia
 
-GNU AGPL-3.0. Ver [`LICENSE`](LICENSE). Proyecto clean-room: no copies código ni
-recursos de otras herramientas de captura.
+GNU AGPL-3.0. Ver [`LICENSE`](LICENSE).

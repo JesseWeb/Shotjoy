@@ -8,8 +8,8 @@
 
 **English** · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Français](README.fr.md) · [Español](README.es.md)
 
-Shotjoy（截趣）is a fast, local-only macOS screenshot tool built from source with
-SwiftPM: region/window capture, screenshot annotation, scrolling screenshots,
+Shotjoy（截趣）is a fast, local-only macOS screenshot tool compiled locally with
+Xcode: region/window capture, screenshot annotation, scrolling screenshots,
 pin-to-desktop, on-device OCR, QR detection, and AI face masking. It lives in
 the menu bar, has no Dock icon, and sends nothing over the network.
 
@@ -24,8 +24,8 @@ then copy, save, or pin it to the desktop.
 [**Latest release →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
 
 The release DMG is ad-hoc signed (not notarized). On first launch, right-click
-Shotjoy → **Open** → **Open**, then grant Screen Recording. Prefer building from
-source? See below — then the app carries your own signature.
+Shotjoy → **Open** → **Open**, then grant Screen Recording. Prefer compiling it
+yourself? See below — then the app carries your own signature.
 
 ## Features
 
@@ -171,5 +171,4 @@ open -a /Applications/Shotjoy.app --args --capture       # start a real capture
 
 ## License
 
-GNU AGPL-3.0. See [`LICENSE`](LICENSE). This is a clean-room project; do not
-copy code or assets from other screenshot apps into it.
+GNU AGPL-3.0. See [`LICENSE`](LICENSE).

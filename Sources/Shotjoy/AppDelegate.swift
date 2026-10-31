@@ -115,6 +115,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     self.showTextPreview(text, title: "OCR Test")
                 }
             }
+        } else if arguments.contains("--pin-test") {
+            Task { @MainActor in
+                if let image = self.makeTestImage(width: 800, height: 600) {
+                    self.pin(image)
+                }
+            }
         } else if arguments.contains("--ocr-test") {
             Task { @MainActor in
                 guard let image = self.makeTestImage(width: 800, height: 600) else {

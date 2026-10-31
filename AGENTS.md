@@ -7,7 +7,7 @@ Shotjoy is a fast, local-only macOS screenshot tool: region/window capture,
 annotations, scrolling screenshots, pin-to-desktop, OCR/QR and AI face masking.
 
 Shotjoy is a local-only macOS screenshot menu-bar app written in Swift
-(SwiftPM, no third-party dependencies). Everything needed is in this repository.
+(built with Xcode, no third-party dependencies). Everything needed is in this repository.
 
 ---
 
@@ -162,7 +162,7 @@ If the shortcut does nothing:
 
 - **Source only.** `dist/` and `.build/` are gitignored. Never commit built
   `.app`, `.icns`, `.dmg`, certificates, `.p12`, or provisioning profiles.
-- **Clean room.** Do not copy code, assets, icons, sounds, strings, or data
+- **Original work.** Do not copy code, assets, icons, sounds, strings, or data
   formats from other screenshot apps. Behaviour may be reproduced from public
   APIs and observation; implementation must be original.
 - **No network.** Keep the local-only promise: no analytics, telemetry,
@@ -177,7 +177,7 @@ If the shortcut does nothing:
 ### Layout
 
 ```
-Package.swift                     SwiftPM manifest
+Package.swift                     project manifest
 Sources/ShotjoyCore/             geometry, annotations, stitching, hotkey model
 Sources/Shotjoy/                 menu-bar app (AppKit + SwiftUI)
   AppDelegate.swift               lifecycle, capture, OCR/QR, permissions

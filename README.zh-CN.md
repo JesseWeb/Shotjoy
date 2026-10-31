@@ -8,7 +8,7 @@
 
 [English](README.md) · **[简体中文](README.zh-CN.md)** · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Français](README.fr.md) · [Español](README.es.md)
 
-Shotjoy（截趣）是一款快速、纯本地的 macOS 截图工具，使用 SwiftPM 从源码构建：
+Shotjoy（截趣）是一款快速、纯本地的 macOS 截图工具，使用 Xcode 在本机编译：
 支持区域/窗口截图、截图标注、滚动截图、桌面贴图、本地 OCR、二维码识别和
 AI 人脸打码。它只住在菜单栏，没有 Dock 图标，也不会把任何内容发送到网络。
 
@@ -23,7 +23,7 @@ AI 人脸打码。它只住在菜单栏，没有 Dock 图标，也不会把任�
 [**最新 Release →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
 
 Release 里的 DMG 使用 ad-hoc 签名（未公证）。首次启动请右键 Shotjoy →
-**打开** → **打开**，然后授予「屏幕录制」权限。也可以从源码构建，这样 App
+**打开** → **打开**，然后授予「屏幕录制」权限。也可以自行编译，这样 App
 会带上你自己的签名。
 
 ## 功能
@@ -164,5 +164,4 @@ open -a /Applications/Shotjoy.app --args --capture       # 立即开始真实截
 
 ## 许可证
 
-GNU AGPL-3.0。见 [`LICENSE`](LICENSE)。这是 clean-room 项目，请勿把其他截图工具的代码或素材
-复制进来。
+GNU AGPL-3.0。见 [`LICENSE`](LICENSE)。

@@ -8,8 +8,8 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · **[日本語](README.ja.md)** · [Français](README.fr.md) · [Español](README.es.md)
 
-Shotjoy（截趣）は高速でローカル完結の macOS スクリーンショットツールです。SwiftPM で
-ソースからビルドでき、範囲/ウィンドウ撮影、注釈、スクロール撮影、デスクトップ
+Shotjoy（截趣）は高速でローカル完結の macOS スクリーンショットツールです。Xcode を
+使ってローカルでビルドでき、範囲/ウィンドウ撮影、注釈、スクロール撮影、デスクトップ
 へのピン留め、ローカル OCR、QR コード認識、AI 顔マスキングを備えます。
 メニューバー常駐型で Dock アイコンはなく、ネットワークへ何も送信しません。
 
@@ -24,7 +24,7 @@ Shotjoy（截趣）は高速でローカル完結の macOS スクリーンショ
 [**最新 Release →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
 
 Release の DMG は ad-hoc 署名（未公証）です。初回起動時は Shotjoy を右クリック
-→ **開く** → **開く** を選び、その後「画面収録」を許可してください。ソースから
+→ **開く** → **開く** を選び、その後「画面収録」を許可してください。自分で
 ビルドすれば、自分の署名を付けた App になります。
 
 ## 機能
@@ -169,5 +169,4 @@ open -a /Applications/Shotjoy.app --args --capture       # 実際の撮影を開
 
 ## ライセンス
 
-GNU AGPL-3.0。[`LICENSE`](LICENSE) を参照。クリーンルームプロジェクトなので、
-他のスクリーンショットツールのコードや素材をコピーしないでください。
+GNU AGPL-3.0。[`LICENSE`](LICENSE) を参照。

@@ -1,7 +1,6 @@
 # Shotjoy (截趣)
 
-Shotjoy is a local-only macOS screenshot menu-bar app (SwiftPM, AppKit +
-SwiftUI). "Screenshots, with joy."
+Shotjoy is a local-only macOS screenshot menu-bar app (AppKit + SwiftUI, built with Xcode). "Screenshots, with joy."
 
 Build: `swift test && ./scripts/make-app.sh release`
 Install: copy `dist/Shotjoy.app` to `/Applications` and open it.

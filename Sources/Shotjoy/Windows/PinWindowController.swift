@@ -1,6 +1,107 @@
 import AppKit
+import Carbon
 import CoreGraphics
 import ShotjoyCore
+
+/// Tracks which pinned screenshot currently has focus and provides a global
+/// Escape fallback while that pin is focused. Accessory apps cannot always
+/// become the frontmost app just by clicking a borderless panel, so this keeps
+/// Escape reliable without closing pins that are not focused.
+final class PinFocusManager {
+    static let shared = PinFocusManager()
+
+    private weak var focused: PinWindowController?
+    private var hotKeyRef: EventHotKeyRef?
+    private var handlerRef: EventHandlerRef?
+    private var resignObserver: NSObjectProtocol?
+
+    private init() {
+        resignObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didResignActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.resignAll()
+        }
+    }
+
+    func focus(_ controller: PinWindowController) {
+        focused = controller
+        registerEscapeHotKey()
+    }
+
+    func resign(_ controller: PinWindowController) {
+        guard focused === controller else { return }
+        focused = nil
+        unregisterEscapeHotKey()
+    }
+
+    func resignAll() {
+        focused = nil
+        unregisterEscapeHotKey()
+    }
+
+    private func registerEscapeHotKey() {
+        guard hotKeyRef == nil else { return }
+        var eventType = EventTypeSpec(
+            eventClass: OSType(kEventClassKeyboard),
+            eventKind: UInt32(kEventHotKeyPressed)
+        )
+        let installStatus = InstallEventHandler(
+            GetApplicationEventTarget(),
+            { _, _, userData in
+                guard let userData else { return noErr }
+                let manager = Unmanaged<PinFocusManager>.fromOpaque(userData).takeUnretainedValue()
+                manager.closeFocusedPin()
+                return noErr
+            },
+            1,
+            &eventType,
+            Unmanaged.passUnretained(self).toOpaque(),
+            &handlerRef
+        )
+        guard installStatus == noErr else { return }
+
+        let hotKeyID = EventHotKeyID(signature: OSType(0x5344_534B), id: 3)
+        let status = RegisterEventHotKey(
+            53,
+            0,
+            hotKeyID,
+            GetApplicationEventTarget(),
+            0,
+            &hotKeyRef
+        )
+        if status != noErr {
+            if let handler = handlerRef {
+                RemoveEventHandler(handler)
+                handlerRef = nil
+            }
+        }
+    }
+
+    private func unregisterEscapeHotKey() {
+        if let ref = hotKeyRef {
+            UnregisterEventHotKey(ref)
+            hotKeyRef = nil
+        }
+        if let handler = handlerRef {
+            RemoveEventHandler(handler)
+            handlerRef = nil
+        }
+    }
+
+    private func closeFocusedPin() {
+        guard NSApp.isActive,
+              let focused,
+              focused.panel.isKeyWindow else { return }
+        focused.close()
+    }
+}
+
+final class PinPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { false }
+}
 
 final class PinView: NSView {
     let image: CGImage
@@ -23,13 +124,52 @@ final class PinView: NSView {
     }
 
     override var isFlipped: Bool { true }
+    override var acceptsFirstResponder: Bool { true }
+    override var canBecomeKeyView: Bool { true }
+
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
     override func draw(_ dirtyRect: NSRect) {
         guard let context = NSGraphicsContext.current?.cgContext else { return }
         CGDrawing.drawImage(image, in: bounds, context: context, flipped: true)
+        if window?.isKeyWindow == true {
+            context.setStrokeColor(NSColor.systemBlue.cgColor)
+            context.setLineWidth(2)
+            context.stroke(bounds.insetBy(dx: 1, dy: 1))
+        }
+    }
+
+    override func becomeFirstResponder() -> Bool {
+        needsDisplay = true
+        if let controller { PinFocusManager.shared.focus(controller) }
+        return true
+    }
+
+    override func resignFirstResponder() -> Bool {
+        needsDisplay = true
+        if let controller { PinFocusManager.shared.resign(controller) }
+        return true
+    }
+
+    override func keyDown(with event: NSEvent) {
+        if event.keyCode == 53 { // Esc
+            controller?.close()
+            return
+        }
+        super.keyDown(with: event)
+    }
+
+    override func cancelOperation(_ sender: Any?) {
+        controller?.close()
     }
 
     override func mouseDown(with event: NSEvent) {
+        // Clicking a pin focuses it. Escape only closes the pin that has focus.
+        NSApp.activate()
+        _ = NSRunningApplication.current.activate(options: [.activateAllWindows])
+        window?.makeKeyAndOrderFront(nil)
+        window?.makeFirstResponder(self)
+        if let controller { PinFocusManager.shared.focus(controller) }
         if event.clickCount >= 2 {
             controller?.close()
         } else {
@@ -66,9 +206,10 @@ final class PinView: NSView {
 }
 
 final class PinWindowController {
-    private(set) var panel: NSPanel
+    private(set) var panel: PinPanel
     private let image: CGImage
     private var onClose: (() -> Void)?
+    private var isClosing = false
 
     init(image: CGImage, onClose: (() -> Void)? = nil) {
         self.image = image
@@ -83,9 +224,9 @@ final class PinWindowController {
             size = CGSize(width: size.width * fit, height: size.height * fit)
         }
 
-        panel = NSPanel(
+        panel = PinPanel(
             contentRect: CGRect(origin: .zero, size: size),
-            styleMask: [.borderless, .nonactivatingPanel],
+            styleMask: [.borderless],
             backing: .buffered,
             defer: false
         )
@@ -115,6 +256,9 @@ final class PinWindowController {
     }
 
     func close() {
+        guard !isClosing else { return }
+        isClosing = true
+        PinFocusManager.shared.resign(self)
         panel.orderOut(nil)
         panel.close()
         onClose?()
