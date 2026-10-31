@@ -1,0 +1,109 @@
+name: Release
+
+# Builds a universal DMG on every v* tag and attaches it to the release.
+#
+# Two tiers:
+#   • Without signing secrets: the app is ad-hoc signed. The DMG works but
+#     Gatekeeper asks for right-click → Open on the first launch.
+#   • With Developer ID + Apple credentials: hardened runtime, notarized and
+#     stapled, so it opens normally.
+#
+# Optional repository secrets:
+#   MACOS_CERT_P12, MACOS_CERT_PASSWORD,
+#   APPLE_ID, APPLE_TEAM_ID, APPLE_APP_PASSWORD
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Detect signing secrets
+        id: signing
+        env:
+          CERT: ${{ secrets.MACOS_CERT_P12 }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+        run: |
+          if [[ -n "$CERT" && -n "$APPLE_ID" ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Developer ID secrets found; the DMG will be notarized."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No signing secrets; building an ad-hoc DMG."
+          fi
+
+      - name: Import Developer ID certificate
+        if: steps.signing.outputs.enabled == 'true'
+        env:
+          CERT_P12: ${{ secrets.MACOS_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: |
+          echo "$CERT_P12" | base64 --decode > /tmp/cert.p12
+          security create-keychain -p actions build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p actions build.keychain
+          security import /tmp/cert.p12 -k build.keychain \
+            -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -s -k actions build.keychain
+          rm -f /tmp/cert.p12
+          security find-identity -v -p codesigning
+
+      - name: Build universal DMG
+        env:
+          SHOTJOY_ARCHS: arm64 x86_64
+          # Ad-hoc unless the Developer ID import above put a real identity in
+          # the keychain; make-app.sh detects it.
+          SHOTJOY_SIGN_IDENTITY: ${{ steps.signing.outputs.enabled == 'true' && '' || 'adhoc' }}
+        run: ./scripts/make-dmg.sh release
+
+      - name: Verify the bundle
+        run: |
+          APP=dist/Shotjoy.app
+          test -x "$APP/Contents/MacOS/Shotjoy"
+          test -f "$APP/Contents/Resources/AppIcon.icns"
+          test -f "$APP/Contents/Resources/zh-Hans.lproj/InfoPlist.strings"
+          codesign --verify --strict --deep "$APP"
+          lipo -archs "$APP/Contents/MacOS/Shotjoy"
+
+      - name: Notarize and staple
+        if: steps.signing.outputs.enabled == 'true'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: ./scripts/notarize.sh dist/Shotjoy-*.dmg
+
+      - name: Publish release asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SIGNED: ${{ steps.signing.outputs.enabled }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          DMG="$(ls dist/Shotjoy-*.dmg | head -1)"
+
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" --title "Shotjoy ${TAG#v}" --generate-notes
+          gh release upload "$TAG" "$DMG" --clobber
+
+          if [[ "$SIGNED" != "true" ]]; then
+            BODY="$(gh release view "$TAG" --json body -q .body)"
+            if ! grep -q "Ad-hoc signed build" <<< "$BODY"; then
+              printf '%s\n\n---\n\n### Ad-hoc signed build\n\nThis DMG is **not notarized**. macOS will refuse a plain double-click the first time.\n\n1. Open the DMG and drag Shotjoy into Applications.\n2. Right-click Shotjoy → **Open** → **Open** in the dialog.\n3. Grant **Screen Recording** in System Settings when asked.\n\nAn ad-hoc update gets a new code identity, so Screen Recording may need to be granted again. Use **Fix Screen Recording Permission…** in the menu-bar menu.\n\nYou can also build from source — then the app carries your own signature.\n' "$BODY" > /tmp/body.md
+              gh release edit "$TAG" --notes-file /tmp/body.md
+            fi
+          fi
+
+          echo "Published $DMG to $TAG"
