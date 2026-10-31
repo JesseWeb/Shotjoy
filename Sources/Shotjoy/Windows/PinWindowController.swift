@@ -105,17 +105,19 @@ final class PinPanel: NSPanel {
 
 final class PinView: NSView {
     let image: CGImage
+    let padding: CGFloat
     weak var controller: PinWindowController?
 
-    init(image: CGImage, controller: PinWindowController) {
+    init(image: CGImage, controller: PinWindowController, padding: CGFloat) {
         self.image = image
         self.controller = controller
-        super.init(frame: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+        self.padding = padding
+        super.init(frame: .zero)
         wantsLayer = true
-        layer?.cornerRadius = 7
-        layer?.masksToBounds = true
-        layer?.borderWidth = 1
-        layer?.borderColor = NSColor.white.withAlphaComponent(0.35).cgColor
+    }
+
+    private var imageRect: CGRect {
+        bounds.insetBy(dx: padding, dy: padding)
     }
 
     @available(*, unavailable)
@@ -131,11 +133,40 @@ final class PinView: NSView {
 
     override func draw(_ dirtyRect: NSRect) {
         guard let context = NSGraphicsContext.current?.cgContext else { return }
-        CGDrawing.drawImage(image, in: bounds, context: context, flipped: true)
+        let rect = imageRect
+        let path = NSBezierPath(roundedRect: rect, xRadius: 9, yRadius: 9)
+
+        // Soft shadow around the image itself, not around the whole window.
+        context.saveGState()
+        NSColor.black.setFill()
+        context.setShadow(
+            offset: CGSize(width: 0, height: 2),
+            blur: 5,
+            color: NSColor.black.withAlphaComponent(0.26).cgColor
+        )
+        path.fill()
+        context.setShadow(
+            offset: CGSize(width: 0, height: 8),
+            blur: 22,
+            color: NSColor.black.withAlphaComponent(0.34).cgColor
+        )
+        path.fill()
+        context.restoreGState()
+
+        context.saveGState()
+        path.addClip()
+        CGDrawing.drawImage(image, in: rect, context: context, flipped: true)
+        context.restoreGState()
+
+        path.lineWidth = 1
+        NSColor.white.withAlphaComponent(0.32).setStroke()
+        path.stroke()
+
         if window?.isKeyWindow == true {
-            context.setStrokeColor(NSColor.systemBlue.cgColor)
-            context.setLineWidth(2)
-            context.stroke(bounds.insetBy(dx: 1, dy: 1))
+            let focusPath = NSBezierPath(roundedRect: rect.insetBy(dx: 1, dy: 1), xRadius: 8, yRadius: 8)
+            focusPath.lineWidth = 2
+            NSColor.systemBlue.setStroke()
+            focusPath.stroke()
         }
     }
 
@@ -211,21 +242,36 @@ final class PinWindowController {
     private var onClose: (() -> Void)?
     private var isClosing = false
 
-    init(image: CGImage, onClose: (() -> Void)? = nil) {
+    init(image: CGImage, preferredRect: CGRect? = nil, onClose: (() -> Void)? = nil) {
         self.image = image
         self.onClose = onClose
 
-        let scale = NSScreen.main?.backingScaleFactor ?? 2
-        var size = CGSize(width: CGFloat(image.width) / scale, height: CGFloat(image.height) / scale)
-        if let visible = NSScreen.main?.visibleFrame {
-            let maxWidth = visible.width * 0.8
-            let maxHeight = visible.height * 0.8
-            let fit = min(1, min(maxWidth / size.width, maxHeight / size.height))
-            size = CGSize(width: size.width * fit, height: size.height * fit)
+        let padding: CGFloat = 24
+        let mainHeight = NSScreen.screens.first?.frame.height ?? 0
+        let cocoaPreferred: CGRect? = preferredRect.map {
+            GlobalCoordinates.quartzToCocoa($0, mainScreenHeight: mainHeight)
         }
 
+        var imageSize: CGSize
+        if let cocoaPreferred {
+            imageSize = cocoaPreferred.size
+        } else {
+            let scale = NSScreen.main?.backingScaleFactor ?? 2
+            imageSize = CGSize(width: CGFloat(image.width) / scale, height: CGFloat(image.height) / scale)
+            if let visible = NSScreen.main?.visibleFrame {
+                let maxWidth = visible.width * 0.8
+                let maxHeight = visible.height * 0.8
+                let fit = min(1, min(maxWidth / imageSize.width, maxHeight / imageSize.height))
+                imageSize = CGSize(width: imageSize.width * fit, height: imageSize.height * fit)
+            }
+        }
+
+        let contentSize = CGSize(
+            width: imageSize.width + padding * 2,
+            height: imageSize.height + padding * 2
+        )
         panel = PinPanel(
-            contentRect: CGRect(origin: .zero, size: size),
+            contentRect: CGRect(origin: .zero, size: contentSize),
             styleMask: [.borderless],
             backing: .buffered,
             defer: false
@@ -234,20 +280,26 @@ final class PinWindowController {
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
         panel.isOpaque = false
         panel.backgroundColor = .clear
-        panel.hasShadow = true
+        panel.hasShadow = false
         panel.isMovableByWindowBackground = true
         panel.isReleasedWhenClosed = false
         panel.hidesOnDeactivate = false
 
-        let view = PinView(image: image, controller: self)
-        view.frame = CGRect(origin: .zero, size: size)
+        let view = PinView(image: image, controller: self, padding: padding)
+        view.frame = CGRect(origin: .zero, size: contentSize)
         view.autoresizingMask = [.width, .height]
         panel.contentView = view
 
-        if let visible = NSScreen.main?.visibleFrame {
-            let x = visible.midX - size.width / 2 + CGFloat.random(in: -30...30)
-            let y = visible.midY - size.height / 2 + CGFloat.random(in: -30...30)
-            panel.setFrameOrigin(NSPoint(x: x, y: y))
+        if let cocoaPreferred {
+            panel.setFrameOrigin(NSPoint(
+                x: cocoaPreferred.minX - padding,
+                y: cocoaPreferred.minY - padding
+            ))
+        } else if let visible = NSScreen.main?.visibleFrame {
+            panel.setFrameOrigin(NSPoint(
+                x: visible.midX - contentSize.width / 2,
+                y: visible.midY - contentSize.height / 2
+            ))
         }
     }
 

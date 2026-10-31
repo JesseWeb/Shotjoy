@@ -14,7 +14,7 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
     private(set) var hoverWindowRect: CGRect?
     private(set) var cursorPoint: CGPoint = .zero
 
-    var onFinish: ((CGImage, FinishAction) -> Void)?
+    var onFinish: ((CGImage, FinishAction, CGRect?) -> Void)?
     var onAnalyze: ((CGImage, AnalyzeAction) -> Void)?
     var onScroll: ((CGRect, CGDirectDisplayID) -> Void)?
     var onCancel: (() -> Void)?
@@ -603,7 +603,7 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
             return
         }
         dismiss()
-        onFinish?(image, action)
+        onFinish?(image, action, selection)
     }
 
     @discardableResult

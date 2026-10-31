@@ -165,10 +165,9 @@ final class OverlayView: NSView {
         origin.x = max(8, min(origin.x, bounds.width - side - 8))
         origin.y = max(8, min(origin.y, bounds.height - side - 30))
         let frame = CGRect(origin: origin, size: CGSize(width: side, height: side))
-        let labelFrame = CGRect(x: frame.minX, y: frame.maxY + 6, width: side, height: 24)
 
         let rounded = NSBezierPath(roundedRect: frame, xRadius: 8, yRadius: 8)
-        NSColor.black.withAlphaComponent(0.9).setFill()
+        NSColor(srgbRed: 0.10, green: 0.12, blue: 0.15, alpha: 0.90).setFill()
         rounded.fill()
 
         let sourceSide: CGFloat = 36
@@ -216,23 +215,52 @@ final class OverlayView: NSView {
         )
         let color = ImageSampling.color(in: screen.image, atPixel: pixel) ?? .white
         let text = "\(ImageSampling.hexString(color))   \(Int(globalPoint.x)), \(Int(globalPoint.y))"
-
-        let labelPath = NSBezierPath(roundedRect: labelFrame, xRadius: 6, yRadius: 6)
-        NSColor.black.withAlphaComponent(0.82).setFill()
-        labelPath.fill()
-
-        NSColor.white.setFill()
-        let swatch = CGRect(x: labelFrame.minX + 6, y: labelFrame.minY + 6, width: 12, height: 12)
-        NSBezierPath(roundedRect: swatch, xRadius: 2, yRadius: 2).fill()
-        color.nsColor.setFill()
-        NSBezierPath(roundedRect: swatch.insetBy(dx: 1, dy: 1), xRadius: 1.5, yRadius: 1.5).fill()
-
         let attributes: [NSAttributedString.Key: Any] = [
             .font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .medium),
             .foregroundColor: NSColor.white
         ]
-        NSAttributedString(string: text, attributes: attributes)
-            .draw(at: CGPoint(x: labelFrame.minX + 24, y: labelFrame.minY + 5))
+        let attributed = NSAttributedString(string: text, attributes: attributes)
+        let textSize = attributed.size()
+        let labelHeight: CGFloat = 26
+        let horizontalPadding: CGFloat = 10
+        let swatchSize: CGFloat = 12
+        let swatchGap: CGFloat = 8
+        let labelWidth = max(side, horizontalPadding + swatchSize + swatchGap + textSize.width + horizontalPadding)
+        var labelX = frame.minX
+        labelX = max(8, min(labelX, bounds.width - labelWidth - 8))
+        var labelY = frame.maxY + 7
+        if labelY + labelHeight > bounds.height - 8 {
+            labelY = frame.minY - labelHeight - 7
+        }
+        labelY = max(8, min(labelY, bounds.height - labelHeight - 8))
+        let labelFrame = CGRect(x: labelX, y: labelY, width: labelWidth, height: labelHeight)
+
+        let labelPath = NSBezierPath(roundedRect: labelFrame, xRadius: 8, yRadius: 8)
+        context.saveGState()
+        context.setShadow(
+            offset: CGSize(width: 0, height: 3),
+            blur: 9,
+            color: NSColor.black.withAlphaComponent(0.35).cgColor
+        )
+        NSColor(srgbRed: 0.10, green: 0.12, blue: 0.15, alpha: 0.88).setFill()
+        labelPath.fill()
+        context.restoreGState()
+        NSColor.white.withAlphaComponent(0.14).setStroke()
+        labelPath.lineWidth = 1
+        labelPath.stroke()
+
+        let swatchY = labelFrame.midY - swatchSize / 2
+        let swatch = CGRect(x: labelFrame.minX + horizontalPadding, y: swatchY, width: swatchSize, height: swatchSize)
+        NSColor.white.withAlphaComponent(0.9).setFill()
+        NSBezierPath(roundedRect: swatch, xRadius: 3, yRadius: 3).fill()
+        color.nsColor.setFill()
+        NSBezierPath(roundedRect: swatch.insetBy(dx: 1, dy: 1), xRadius: 2, yRadius: 2).fill()
+
+        let textOrigin = CGPoint(
+            x: swatch.maxX + swatchGap,
+            y: labelFrame.minY + (labelHeight - textSize.height) / 2
+        )
+        attributed.draw(at: textOrigin)
     }
 
     // MARK: - Events

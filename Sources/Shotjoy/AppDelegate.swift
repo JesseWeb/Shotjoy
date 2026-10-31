@@ -125,6 +125,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     self.pin(image)
                 }
             }
+        } else if arguments.contains("--pin-test-rect") {
+            Task { @MainActor in
+                if let image = self.makeTestImage(width: 800, height: 600) {
+                    self.pin(image, at: CGRect(x: 300, y: 200, width: 400, height: 300))
+                }
+            }
         } else if arguments.contains("--ocr-test") {
             Task { @MainActor in
                 guard let image = self.makeTestImage(width: 800, height: 600) else {
@@ -147,6 +153,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else if arguments.contains("--demo-overlay") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 self?.startDemoOverlay()
+            }
+        } else if arguments.contains("--demo-hud") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.startDemoOverlay(showSelection: false)
             }
         }
     }
@@ -203,8 +213,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let session = CaptureSession(screens: screens)
         captureSession = session
-        session.onFinish = { [weak self] image, action in
-            self?.handleFinish(image: image, action: action)
+        session.onFinish = { [weak self] image, action, selection in
+            self?.handleFinish(image: image, action: action, selection: selection)
         }
         session.onCancel = { [weak self] in
             self?.isCapturing = false
@@ -222,7 +232,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         session.start()
     }
 
-    private func handleFinish(image: CGImage, action: FinishAction) {
+    private func handleFinish(image: CGImage, action: FinishAction, selection: CGRect?) {
         isCapturing = false
         captureSession = nil
         lastImage = image
@@ -256,7 +266,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if preferences.copyAfterCapture {
                 ImageExporter.copyToPasteboard(image)
             }
-            pin(image)
+            pin(image, at: selection)
             restorePreviousApp()
         }
     }
@@ -348,8 +358,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         analyze(image: lastImage, action: .qrCode)
     }
 
-    private func pin(_ image: CGImage) {
-        let pin = PinWindowController(image: image)
+    private func pin(_ image: CGImage, at selection: CGRect? = nil) {
+        let pin = PinWindowController(image: image, preferredRect: selection)
         pinWindows.append(pin)
         pin.show()
         pinWindows.removeAll { !$0.panel.isVisible }
@@ -519,7 +529,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         try? status.write(to: URL(fileURLWithPath: "/tmp/shotjoy-status.txt"), atomically: true, encoding: .utf8)
     }
 
-    private func startDemoOverlay() {
+    private func startDemoOverlay(showSelection: Bool = true) {
         isCapturing = true
         var screens: [CapturedScreen] = []
         for (index, screen) in NSScreen.screens.enumerated() {
@@ -539,7 +549,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard !screens.isEmpty else { return }
         let session = CaptureSession(screens: screens)
         captureSession = session
-        if let first = screens.first {
+        if showSelection, let first = screens.first {
             let selection = CGRect(
                 x: first.bounds.minX + first.bounds.width * 0.18,
                 y: first.bounds.minY + first.bounds.height * 0.22,
@@ -569,14 +579,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             self?.isCapturing = false
             self?.captureSession = nil
         }
-        session.onFinish = { [weak self] image, action in
+        session.onFinish = { [weak self] image, _, _ in
             ImageExporter.copyToPasteboard(image)
             self?.isCapturing = false
             self?.captureSession = nil
         }
         session.start()
         session.showToolbarForTesting()
-        if let first = screens.first {
+        if showSelection, let first = screens.first {
             let selection = CGRect(
                 x: first.bounds.minX + first.bounds.width * 0.18,
                 y: first.bounds.minY + first.bounds.height * 0.22,
