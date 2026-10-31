@@ -32,11 +32,14 @@ The script:
 
 ```sh
 brew install gh
-gh auth login
 ```
 
-`gh` needs `repo` and `workflow` access for the account that owns
-`JesseWeb/Shotjoy`.
+`release.sh` needs a GitHub token with `repo` (and ideally `workflow`) access for
+the account that owns `JesseWeb/Shotjoy`. It uses `GH_TOKEN` when set, otherwise
+it reuses the credential git already stores in the macOS keychain, so on a
+machine that can push to the repository no separate login step is required.
+
+If neither is available, run `gh auth login` once.
 
 ## If Actions is disabled
 

@@ -10,9 +10,13 @@
 #   2. updates the example DMG names in README/docs
 #   3. builds an ad-hoc universal DMG (no personal signing identity)
 #   4. commits the version bump, tags vX.Y.Z, and pushes to GitHub
-#   5. creates the GitHub Release and uploads the DMG (requires gh + auth)
+#   5. creates the GitHub Release and uploads the DMG (requires gh)
 #
 # Every user-visible change should get a new patch version and a new release.
+#
+# Authentication: `gh auth login` is preferred, but the script also reuses the
+# GitHub credential git already stores in the macOS keychain, so a release needs
+# no separate login step on a machine that can push to the repository.
 
 set -euo pipefail
 
@@ -31,6 +35,21 @@ fi
 
 if ! command -v gh >/dev/null 2>&1; then
     echo "error: GitHub CLI (gh) is required: brew install gh && gh auth login" >&2
+    exit 1
+fi
+
+# gh needs a token. Reuse the GitHub credential git already stores so releases
+# work without a separate `gh auth login` on a machine that can push.
+if [[ -z "${GH_TOKEN:-}" && -z "${GITHUB_TOKEN:-}" ]]; then
+    stored="$(printf 'protocol=https\nhost=github.com\n\n' | git credential-osxkeychain get 2>/dev/null || true)"
+    stored_token="$(printf '%s\n' "$stored" | sed -n 's/^password=//p' | head -1)"
+    if [[ -n "$stored_token" ]]; then
+        export GH_TOKEN="$stored_token"
+    fi
+fi
+
+if [[ -z "${GH_TOKEN:-}" && -z "${GITHUB_TOKEN:-}" ]]; then
+    echo "error: no GitHub token; run 'gh auth login' first" >&2
     exit 1
 fi
 

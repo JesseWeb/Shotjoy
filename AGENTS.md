@@ -77,11 +77,12 @@ Every user-visible change must bump the version and publish a GitHub Release:
 
 This bumps `Support/Info.plist`, builds an ad-hoc universal DMG, commits
 `Release vX.Y.Z`, tags and pushes it, and creates the GitHub Release with the
-DMG. Requires `gh auth login`.
+DMG. It reuses the GitHub credential git already stores, so no separate
+`gh auth login` is needed on a machine that can push.
 
 See [`docs/releasing.md`](docs/releasing.md).
 
-## 4. Install and launch
+## 5. Install and launch
 
 ```sh
 pkill -x Shotjoy 2>/dev/null || true
@@ -109,7 +110,7 @@ open -a /Applications/Shotjoy.app --args --demo-overlay
 
 ---
 
-## 5. Screen Recording permission
+## 6. Screen Recording permission
 
 Shotjoy uses ScreenCaptureKit/CoreGraphics. macOS requires **System Settings →
 Privacy & Security → Screen Recording**.
@@ -153,7 +154,7 @@ If the shortcut does nothing:
 
 ---
 
-## 6. First-run behaviour worth knowing
+## 7. First-run behaviour worth knowing
 
 - **Hotkey conflict.** If another app owns `⌃⌘A`, registration fails and a
   warning appears. Do not kill other apps without asking; offer the menu bar or
@@ -172,7 +173,7 @@ If the shortcut does nothing:
 
 ---
 
-## 7. Rules for changing the project
+## 8. Rules for changing the project
 
 - **Source only.** `dist/` and `.build/` are gitignored. Never commit built
   `.app`, `.icns`, `.dmg`, certificates, `.p12`, or provisioning profiles.
