@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var previousApp: NSRunningApplication?
     private var lastImage: CGImage?
+    private var lastSelection: CGRect?
     private var lastURL: URL?
     private var isCapturing = false
     private var didShowHotKeyWarning = false
@@ -236,6 +237,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         isCapturing = false
         captureSession = nil
         lastImage = image
+        lastSelection = selection
 
         if preferences.playSound {
             NSSound(named: "Tink")?.play()
@@ -303,6 +305,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func handleLongScreenshot(_ image: CGImage) {
         lastImage = image
+        lastSelection = nil
         if preferences.copyAfterCapture {
             ImageExporter.copyToPasteboard(image)
         }
@@ -322,7 +325,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             showNoScreenshotAlert()
             return
         }
-        pin(lastImage)
+        pin(lastImage, at: lastSelection)
     }
 
     private func saveLast() {
