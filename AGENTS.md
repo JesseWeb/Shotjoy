@@ -52,7 +52,7 @@ git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
 cd ~/Developer/Shotjoy
 swift test                         # 23 core tests, no UI
 ./scripts/make-app.sh release      # -> dist/Shotjoy.app
-./scripts/make-dmg.sh release      # optional -> dist/Shotjoy-1.0.1.dmg
+./scripts/make-dmg.sh release      # optional -> dist/Shotjoy-1.0.2.dmg
 ```
 
 `make-app.sh`:
