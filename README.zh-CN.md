@@ -64,7 +64,7 @@ open /Applications/Shotjoy.app
 构建可拖入「应用程序」的 DMG：
 
 ```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.0.dmg
+./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.1.dmg
 ```
 
 `make-app.sh` 会按顺序选择签名身份：`SHOTJOY_SIGN_IDENTITY`、Developer ID、

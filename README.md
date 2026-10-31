@@ -68,7 +68,7 @@ open /Applications/Shotjoy.app
 Build a drag-to-Applications disk image:
 
 ```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.0.dmg
+./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.1.dmg
 ```
 
 `make-app.sh` picks the signing identity available on the build machine:

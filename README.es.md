@@ -76,7 +76,7 @@ open /Applications/Shotjoy.app
 Crear un DMG para arrastrar a Aplicaciones:
 
 ```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.0.dmg
+./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.1.dmg
 ```
 
 `make-app.sh` elige la identidad de firma disponible: `SHOTJOY_SIGN_IDENTITY`,
