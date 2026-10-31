@@ -1,10 +1,10 @@
-# ShotDesk
+# Shotjoy (截趣)
 
-ShotDesk is a local-only macOS screenshot menu-bar app (SwiftPM, AppKit +
-SwiftUI) inspired by WeChat's screenshot workflow.
+Shotjoy is a local-only macOS screenshot menu-bar app (SwiftPM, AppKit +
+SwiftUI) inspired by WeChat's screenshot workflow. "Screenshots, with joy."
 
 Build: `swift test && ./scripts/make-app.sh release`
-Install: copy `dist/ShotDesk.app` to `/Applications` and open it.
+Install: copy `dist/Shotjoy.app` to `/Applications` and open it.
 Permission: System Settings → Privacy & Security → Screen Recording.
 Shortcut: ⌃⌘A (Control-Command-A), configurable in Settings.
 Key files: AGENTS.md (agent instructions), docs/ai-install.md (copy-paste

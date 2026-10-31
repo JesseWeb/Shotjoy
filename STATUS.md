@@ -4,20 +4,25 @@
 
 - `swift test`: **23 tests, 0 failures** (geometry, annotations, stitching,
   shortcut model, file naming).
-- `./scripts/make-app.sh release`: builds and signs `dist/ShotDesk.app`.
-- `SHOTDESK_ARCHS="arm64 x86_64" ./scripts/make-dmg.sh release`: universal
-  `dist/ShotDesk-1.0.0.dmg`, mounted and `codesign --verify --strict` passed.
+- `./scripts/make-app.sh release`: builds and signs `dist/Shotjoy.app`.
+- `SHOTJOY_ARCHS="arm64 x86_64" ./scripts/make-dmg.sh release`: universal
+  `dist/Shotjoy-1.0.0.dmg`, mounted and `codesign --verify --strict` passed.
 - `--self-test`: renders an 800×600 PNG with rectangle, arrow, text and mosaic;
   top/bottom orientation and annotation placement verified visually.
 - `--capture-test`: ScreenCaptureKit captured the display at **2880×1800 @2.0**,
   and a selected region rendered to **1600×1188** with an annotation.
 - `--demo-overlay`: synthetic overlay renders the dimmed desktop, bright
   selection, handles, annotations, a live draft stroke, and the toolbar.
-- `--ocr-test`: Vision recognized `ShotDesk 文字识别 Test 123`.
+- `--ocr-test`: Vision recognized `Shotjoy 文字识别 Test 123`.
 - `--analyze-test`: OCR result copied to the clipboard and shown in the floating
   result window.
-- `--status`: `permission=true`, `hotkeyRegistered=true`, shortcut `⌃⌘A`,
-  bundle id `dev.shotdesk.ShotDesk`, path `/Applications/ShotDesk.app`.
+- `--status` for the renamed bundle: `permission=true` (Screen Recording
+  re-granted for the new bundle id), `hotkeyRegistered=true`, shortcut `⌃⌘A`,
+  bundle id `dev.shotjoy.Shotjoy`, path `/Applications/Shotjoy.app`.
+- After the rename, `⌃⌘A` opened the full-screen overlay on the unlocked
+  screen; the new app bundle and status icon are live.
+- `--capture-test` after the rename still captures **2880×1800 @2.0** and renders
+  **1600×1188**; `--ocr-test` recognizes `Shotjoy 文字识别 Test 123`.
 
 ## Live end-to-end checks
 

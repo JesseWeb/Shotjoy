@@ -83,6 +83,36 @@ context.stroke(selection.insetBy(dx: 17, dy: 17))
 context.setFillColor(NSColor.white.cgColor)
 context.fillEllipse(in: CGRect(x: 480, y: 500, width: 64, height: 64))
 
+// A sparkle for the "joy" in Shotjoy.
+func sparkle(center: CGPoint, radius: CGFloat, inner: CGFloat) -> CGPath {
+    let path = CGMutablePath()
+    path.move(to: CGPoint(x: center.x, y: center.y - radius))
+    path.addQuadCurve(
+        to: CGPoint(x: center.x + radius, y: center.y),
+        control: CGPoint(x: center.x + inner, y: center.y - inner)
+    )
+    path.addQuadCurve(
+        to: CGPoint(x: center.x, y: center.y + radius),
+        control: CGPoint(x: center.x + inner, y: center.y + inner)
+    )
+    path.addQuadCurve(
+        to: CGPoint(x: center.x - radius, y: center.y),
+        control: CGPoint(x: center.x - inner, y: center.y + inner)
+    )
+    path.addQuadCurve(
+        to: CGPoint(x: center.x, y: center.y - radius),
+        control: CGPoint(x: center.x - inner, y: center.y - inner)
+    )
+    return path
+}
+
+context.setFillColor(NSColor.white.withAlphaComponent(0.92).cgColor)
+context.addPath(sparkle(center: CGPoint(x: 824, y: 824), radius: 74, inner: 22))
+context.fillPath()
+context.setFillColor(NSColor.white.withAlphaComponent(0.75).cgColor)
+context.addPath(sparkle(center: CGPoint(x: 716, y: 892), radius: 31, inner: 9))
+context.fillPath()
+
 context.setStrokeColor(NSColor.black.withAlphaComponent(0.12).cgColor)
 context.setLineWidth(8)
 context.addPath(path)

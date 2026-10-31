@@ -1,6 +1,6 @@
 // swift-tools-version: 5.9
 //
-// ShotDesk — a WeChat-style screenshot tool for macOS.
+// Shotjoy — a WeChat-style screenshot tool for macOS.
 // GNU AGPL-3.0. See LICENSE.
 
 import PackageDescription
@@ -8,23 +8,23 @@ import PackageDescription
 var products: [Product] = []
 var targets: [Target] = [
     .target(
-        name: "ShotDeskCore",
-        path: "Sources/ShotDeskCore"
+        name: "ShotjoyCore",
+        path: "Sources/ShotjoyCore"
     ),
     .testTarget(
-        name: "ShotDeskCoreTests",
-        dependencies: ["ShotDeskCore"],
-        path: "Tests/ShotDeskCoreTests"
+        name: "ShotjoyCoreTests",
+        dependencies: ["ShotjoyCore"],
+        path: "Tests/ShotjoyCoreTests"
     )
 ]
 
 #if os(macOS)
-products.append(.executable(name: "ShotDesk", targets: ["ShotDesk"]))
+products.append(.executable(name: "Shotjoy", targets: ["Shotjoy"]))
 targets.append(
     .executableTarget(
-        name: "ShotDesk",
-        dependencies: ["ShotDeskCore"],
-        path: "Sources/ShotDesk",
+        name: "Shotjoy",
+        dependencies: ["ShotjoyCore"],
+        path: "Sources/Shotjoy",
         linkerSettings: [
             .linkedFramework("AppKit"),
             .linkedFramework("SwiftUI"),
@@ -42,7 +42,7 @@ targets.append(
 #endif
 
 let package = Package(
-    name: "ShotDesk",
+    name: "Shotjoy",
     platforms: [
         .macOS(.v14)
     ],

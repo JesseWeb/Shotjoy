@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Notarize and staple a ShotDesk disk image.
+# Notarize and staple a Shotjoy disk image.
 #
 # Usage:
-#   ./scripts/notarize.sh dist/ShotDesk-1.0.0.dmg
+#   ./scripts/notarize.sh dist/Shotjoy-1.0.0.dmg
 #
 # Credentials, pick one:
 #   APPLE_ID, APPLE_TEAM_ID, APPLE_APP_PASSWORD
@@ -13,17 +13,17 @@ set -euo pipefail
 
 DMG="${1:-}"
 if [[ -z "$DMG" || ! -f "$DMG" ]]; then
-    echo "usage: $0 <path/to/ShotDesk-x.y.z.dmg>" >&2
+    echo "usage: $0 <path/to/Shotjoy-x.y.z.dmg>" >&2
     exit 64
 fi
 
 MOUNT_POINT="$(mktemp -d)/mnt"
 hdiutil attach "$DMG" -nobrowse -readonly -mountpoint "$MOUNT_POINT" >/dev/null
-APP_PATH="$MOUNT_POINT/ShotDesk.app"
+APP_PATH="$MOUNT_POINT/Shotjoy.app"
 
 if [[ ! -d "$APP_PATH" ]]; then
     hdiutil detach "$MOUNT_POINT" >/dev/null 2>&1 || true
-    echo "error: $DMG does not contain ShotDesk.app" >&2
+    echo "error: $DMG does not contain Shotjoy.app" >&2
     exit 1
 fi
 
@@ -37,7 +37,7 @@ error: the app is signed with "${AUTHORITY:-no identity}".
 Notarization needs a "Developer ID Application" certificate.
 
 Install one (Apple Developer Program), then rebuild:
-  SHOTDESK_SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" \\
+  SHOTJOY_SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" \\
     ./scripts/make-dmg.sh release
 EOF
     exit 1

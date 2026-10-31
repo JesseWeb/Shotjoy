@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Build a drag-to-Applications disk image: dist/ShotDesk-<version>.dmg
+# Build a drag-to-Applications disk image: dist/Shotjoy-<version>.dmg
 #
 # Usage: ./scripts/make-dmg.sh [debug|release]
 
@@ -11,18 +11,18 @@ cd "$(dirname "$0")/.."
 CONFIG="${1:-release}"
 ./scripts/make-app.sh "$CONFIG"
 
-APP="dist/ShotDesk.app"
+APP="dist/Shotjoy.app"
 VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Contents/Info.plist")"
-DMG="dist/ShotDesk-${VERSION}.dmg"
+DMG="dist/Shotjoy-${VERSION}.dmg"
 
-STAGE="$(mktemp -d)/ShotDesk"
+STAGE="$(mktemp -d)/Shotjoy"
 mkdir -p "$STAGE"
-cp -R "$APP" "$STAGE/ShotDesk.app"
+cp -R "$APP" "$STAGE/Shotjoy.app"
 ln -s /Applications "$STAGE/Applications"
 
 rm -f "$DMG"
 hdiutil create \
-    -volname "ShotDesk" \
+    -volname "Shotjoy" \
     -srcfolder "$STAGE" \
     -fs HFS+ \
     -format UDZO \

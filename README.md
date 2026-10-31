@@ -1,12 +1,20 @@
-# ShotDesk
+# Shotjoy（截趣）
 
-A WeChat-style screenshot tool for macOS, built from source with SwiftPM.
+**Screenshots, with joy.** 截图，也可以很有趣。
+
+Shotjoy（截趣）is a WeChat-style macOS screenshot tool built from source with
+SwiftPM: region/window capture, screenshot annotation, scrolling screenshots,
+pin-to-desktop, on-device OCR, QR detection, and AI face masking. It lives in
+the menu bar, has no Dock icon, and sends nothing over the network.
+
+> Keywords: macOS screenshot tool, WeChat-style screenshot, screenshot
+> annotation, scrolling screenshot, pin screenshot, OCR, screen capture,
+> 微信风格截图、Mac 截图工具、截图标注、长截图、贴图、文字识别、二维码识别。
 
 Press **⌃⌘A** (Control-Command-A), drag a region or click a window, annotate it,
-then copy, save, or pin it to the desktop. ShotDesk lives in the menu bar and
-has no Dock icon and no network code.
+then copy, save, or pin it to the desktop.
 
-![ShotDesk overlay](docs/screenshot.png)
+![Shotjoy overlay](docs/screenshot.png)
 
 ## Features
 
@@ -37,36 +45,40 @@ has no Dock icon and no network code.
 ## Build and install
 
 ```sh
-git clone <this repository> ~/Developer/ShotDesk
-cd ~/Developer/ShotDesk
+git clone <this repository> ~/Developer/Shotjoy
+cd ~/Developer/Shotjoy
 swift test                       # core geometry/stitching tests
-./scripts/make-app.sh release    # -> dist/ShotDesk.app
-cp -R dist/ShotDesk.app /Applications/
-open /Applications/ShotDesk.app
+./scripts/make-app.sh release    # -> dist/Shotjoy.app
+cp -R dist/Shotjoy.app /Applications/
+open /Applications/Shotjoy.app
 ```
 
 Build a drag-to-Applications disk image:
 
 ```sh
-./scripts/make-dmg.sh release    # -> dist/ShotDesk-1.0.0.dmg
+./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.0.dmg
 ```
 
 `make-app.sh` picks the signing identity available on the build machine:
-`SHOTDESK_SIGN_IDENTITY`, then Developer ID, then Apple Development, then
+`SHOTJOY_SIGN_IDENTITY`, then Developer ID, then Apple Development, then
 ad-hoc. The DMG is signed with the same identity when possible. Notarization is
 optional and documented in [`docs/distribution.md`](docs/distribution.md).
 
 ## First run: Screen Recording permission
 
 macOS only lets a user grant Screen Recording in System Settings. On first
-capture ShotDesk asks for it and opens:
+capture Shotjoy asks for it and opens:
 
 **System Settings → Privacy & Security → Screen Recording**
 
-Switch **ShotDesk** on, then capture again. Some macOS builds require quitting
-and reopening ShotDesk after the grant.
+Switch **Shotjoy** on, then capture again. Some macOS builds require quitting
+and reopening Shotjoy after the grant.
 
-If the switch is already on but ShotDesk still asks, the build's signature
+> **Renamed from ShotDesk?** The bundle id changed to `dev.shotjoy.Shotjoy`, so
+> macOS treats Shotjoy as a new app and asks for Screen Recording once more.
+> Shortcut/behaviour preferences are migrated automatically.
+
+If the switch is already on but Shotjoy still asks, the build's signature
 changed (common with ad-hoc builds). Use **menu-bar icon → Fix Screen Recording
 Permission…**, then grant again. The app runs `tccutil reset ScreenCapture` for
 its own bundle id and reopens the pane.
@@ -98,9 +110,9 @@ opens the menu.
 
 ## Where things live
 
-ShotDesk stores almost nothing:
+Shotjoy stores almost nothing:
 
-- Preferences: `~/Library/Preferences/dev.shotdesk.ShotDesk.plist`
+- Preferences: `~/Library/Preferences/dev.shotjoy.Shotjoy.plist`
 - Screenshots: only where you save them (clipboard by default)
 - Login item: `SMAppService`, with a LaunchAgent fallback
 - No history database, no uploads, no analytics
@@ -108,23 +120,23 @@ ShotDesk stores almost nothing:
 Uninstall:
 
 ```sh
-pkill -x ShotDesk
-rm -rf /Applications/ShotDesk.app
-defaults delete dev.shotdesk.ShotDesk 2>/dev/null || true
-tccutil reset ScreenCapture dev.shotdesk.ShotDesk
+pkill -x Shotjoy
+rm -rf /Applications/Shotjoy.app
+defaults delete dev.shotjoy.Shotjoy 2>/dev/null || true
+tccutil reset ScreenCapture dev.shotjoy.Shotjoy
 ```
 
 ## Architecture
 
 ```
-Sources/ShotDeskCore/          pure logic, testable without a window server
+Sources/ShotjoyCore/          pure logic, testable without a window server
   Geometry.swift               global coordinates, selection handles, clamping
   Annotation.swift             annotation model + undo stack
   FrameStitcher.swift          row-signature overlap search for long screenshots
   HotKey.swift                 shortcut model and display names
   ImageNaming.swift            stable PNG file names
 
-Sources/ShotDesk/              AppKit/SwiftUI menu-bar app
+Sources/Shotjoy/              AppKit/SwiftUI menu-bar app
   AppDelegate.swift            lifecycle, capture flow, OCR/QR, permissions
   Services/
     ScreenCaptureService.swift ScreenCaptureKit + CoreGraphics fallback
@@ -145,9 +157,15 @@ See [`docs/reverse-engineering.md`](docs/reverse-engineering.md). In short, the
 shipped WeChat 4.1.5 binary contains `weshot::ScreenShoter`,
 `weshot::LongScreenShoter`, `GrabWorker`, `SpliceWorker`, `OpenCVWorker`,
 `SizeSelect`, `ColorPanel`, `PinWindow`, and a selection state machine named
-`ShotSelection`. ShotDesk is a clean-room implementation of the same observable
+`ShotSelection`. Shotjoy is a clean-room implementation of the same observable
 workflow using public macOS APIs. It contains no WeChat code, assets, icons, or
 data formats.
+
+## Name and search
+
+`Shotjoy（截趣）` is a bilingual brand: *shot + joy* / *截 + 趣*. See
+[`docs/branding.md`](docs/branding.md) for the one-line pitches, GitHub
+description/topics, Chinese keywords, and the names we checked and avoided.
 
 ## Verification status
 
@@ -161,10 +179,10 @@ capture, QR and AI masking is still useful.
 Hidden flags for agents and debugging:
 
 ```sh
-open -a /Applications/ShotDesk.app --args --status        # writes /tmp/shotdesk-status.txt
-open -a /Applications/ShotDesk.app --args --self-test     # renders /tmp/shotdesk-render-test.png
-open -a /Applications/ShotDesk.app --args --demo-overlay  # synthetic overlay, no permission needed
-open -a /Applications/ShotDesk.app --args --capture       # start a real capture
+open -a /Applications/Shotjoy.app --args --status        # writes /tmp/shotjoy-status.txt
+open -a /Applications/Shotjoy.app --args --self-test     # renders /tmp/shotjoy-render-test.png
+open -a /Applications/Shotjoy.app --args --demo-overlay  # synthetic overlay, no permission needed
+open -a /Applications/Shotjoy.app --args --capture       # start a real capture
 ```
 
 ## License

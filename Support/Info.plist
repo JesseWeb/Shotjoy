@@ -3,13 +3,19 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>ShotDesk</string>
+    <string>Shotjoy</string>
     <key>CFBundleDisplayName</key>
-    <string>ShotDesk</string>
+    <string>Shotjoy</string>
     <key>CFBundleIdentifier</key>
-    <string>dev.shotdesk.ShotDesk</string>
+    <string>dev.shotjoy.Shotjoy</string>
     <key>CFBundleExecutable</key>
-    <string>ShotDesk</string>
+    <string>Shotjoy</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>zh-Hans</string>
+        <string>zh-Hant</string>
+    </array>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundlePackageType</key>
@@ -29,7 +35,7 @@
     <key>LSApplicationCategoryType</key>
     <string>public.app-category.utilities</string>
     <key>NSHumanReadableCopyright</key>
-    <string>GNU AGPL-3.0. Copyright (c) 2026 ShotDesk contributors.</string>
+    <string>GNU AGPL-3.0. Copyright (c) 2026 Shotjoy contributors.</string>
     <key>NSSupportsAutomaticGraphicsSwitching</key>
     <true/>
 </dict>

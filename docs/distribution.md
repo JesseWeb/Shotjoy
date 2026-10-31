@@ -1,17 +1,17 @@
 # Distribution
 
-ShotDesk is source-only in normal use. This page is for maintainers who ship a
+Shotjoy is source-only in normal use. This page is for maintainers who ship a
 DMG.
 
 ## Build
 
 ```sh
-SHOTDESK_ARCHS="arm64 x86_64" ./scripts/make-dmg.sh release
+SHOTJOY_ARCHS="arm64 x86_64" ./scripts/make-dmg.sh release
 ```
 
 The app is signed with the best identity on the build machine:
 
-1. `SHOTDESK_SIGN_IDENTITY` (for example `Developer ID Application: Name (TEAM)`)
+1. `SHOTJOY_SIGN_IDENTITY` (for example `Developer ID Application: Name (TEAM)`)
 2. `Developer ID Application`
 3. `Apple Development`
 4. ad-hoc
@@ -28,7 +28,7 @@ Credentials, pick one:
 APPLE_ID=you@example.com \
 APPLE_TEAM_ID=ABCDE12345 \
 APPLE_APP_PASSWORD=abcd-efgh-ijkl-mnop \
-./scripts/notarize.sh dist/ShotDesk-1.0.0.dmg
+./scripts/notarize.sh dist/Shotjoy-1.0.0.dmg
 ```
 
 or an App Store Connect API key:
@@ -37,7 +37,7 @@ or an App Store Connect API key:
 NOTARY_KEY_PATH=/path/AuthKey_XXXX.p8 \
 NOTARY_KEY_ID=XXXX \
 NOTARY_ISSUER=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
-./scripts/notarize.sh dist/ShotDesk-1.0.0.dmg
+./scripts/notarize.sh dist/Shotjoy-1.0.0.dmg
 ```
 
 The script checks that the app inside the DMG is Developer ID signed and has the

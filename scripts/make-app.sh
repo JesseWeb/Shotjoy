@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# Build ShotDesk.app into dist/.
+# Build Shotjoy.app into dist/.
 #
 # Usage: ./scripts/make-app.sh [debug|release]
 #
 # Signing identity, in order:
-#   1. $SHOTDESK_SIGN_IDENTITY
+#   1. $SHOTJOY_SIGN_IDENTITY
 #   2. "Developer ID Application" (distribution; enables notarization)
 #   3. "Apple Development" (stable local identity; keeps the TCC grant)
 #   4. ad-hoc (no identity on the machine)
@@ -17,21 +17,24 @@ cd "$(dirname "$0")/.."
 CONFIG="${1:-release}"
 
 ARCH_ARGS=""
-if [[ -n "${SHOTDESK_ARCHS:-}" ]]; then
-    for arch in $SHOTDESK_ARCHS; do
+if [[ -n "${SHOTJOY_ARCHS:-}" ]]; then
+    for arch in $SHOTJOY_ARCHS; do
         ARCH_ARGS="$ARCH_ARGS --arch $arch"
     done
 fi
 
-swift build -c "$CONFIG" $ARCH_ARGS --product ShotDesk
+swift build -c "$CONFIG" $ARCH_ARGS --product Shotjoy
 
 BIN_DIR="$(swift build -c "$CONFIG" $ARCH_ARGS --show-bin-path)"
-APP="dist/ShotDesk.app"
+APP="dist/Shotjoy.app"
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN_DIR/ShotDesk" "$APP/Contents/MacOS/ShotDesk"
+cp "$BIN_DIR/Shotjoy" "$APP/Contents/MacOS/Shotjoy"
 cp Support/Info.plist "$APP/Contents/Info.plist"
+for lproj in Support/*.lproj; do
+    [[ -d "$lproj" ]] && cp -R "$lproj" "$APP/Contents/Resources/"
+done
 
 if [[ ! -f Support/AppIcon.png ]]; then
     swift scripts/make-icon.swift
@@ -64,7 +67,7 @@ pick_identity() {
         | head -1
 }
 
-SIGN_ID="${SHOTDESK_SIGN_IDENTITY:-}"
+SIGN_ID="${SHOTJOY_SIGN_IDENTITY:-}"
 if [[ "$SIGN_ID" == "adhoc" || "$SIGN_ID" == "-" ]]; then
     SIGN_ID=""
     FORCE_ADHOC=1
@@ -90,7 +93,7 @@ else
     codesign --force --sign - "$APP" >/dev/null 2>&1 || true
 fi
 
-echo "Built $APP ($(lipo -archs "$APP/Contents/MacOS/ShotDesk" 2>/dev/null || echo "single arch"))"
+echo "Built $APP ($(lipo -archs "$APP/Contents/MacOS/Shotjoy" 2>/dev/null || echo "single arch"))"
 if [[ -n "$SIGN_ID" ]]; then
     echo "Signed with $SIGN_ID"
 else

@@ -1,6 +1,6 @@
-# How WeChat implements screenshots (and how ShotDesk mirrors it)
+# How WeChat implements screenshots (and how Shotjoy mirrors it)
 
-This note records the static evidence used to design ShotDesk. It is a
+This note records the static evidence used to design Shotjoy. It is a
 **clean-room** study: no WeChat code, resources, icons, or data formats were
 copied.
 
@@ -95,7 +95,7 @@ The app imports Carbon's `RegisterEventHotKey` and `UnregisterEventHotKey`, and
 CoreGraphics' `CGEventCreateMouseEvent` / `CGEventPost`. This is the classic
 global-hotkey combination that does **not** require Accessibility permission.
 
-ShotDesk: `HotKeyManager` uses the same Carbon API and stores
+Shotjoy: `HotKeyManager` uses the same Carbon API and stores
 `keyCode`/`modifiers`; the default is `⌃⌘A`, changeable with a recorder.
 
 ## 3. Capture APIs
@@ -143,7 +143,7 @@ Interpretation:
   imported; these are plausible for continuous frame grabbing while the user
   scrolls.
 
-ShotDesk: `ScreenCaptureService` prefers ScreenCaptureKit on macOS 14+, falls
+Shotjoy: `ScreenCaptureService` prefers ScreenCaptureKit on macOS 14+, falls
 back to `CGDisplayCreateImage`; `WindowLocator` uses
 `CGWindowListCopyWindowInfo`; `ImageExporter` uses ImageIO and NSPasteboard.
 
@@ -175,7 +175,7 @@ moves between `start → captured → moved/resized → locked`, and a
 `ScreenshotWillStart` / `ScreenshotDidFinish` pair around the overlay lifetime.
 `showRegion` is the bright (un-dimmed) selection area; `drawSelected` paints it.
 
-ShotDesk: `SelectionGeometry` implements normalise/move/resize/clamp and eight
+Shotjoy: `SelectionGeometry` implements normalise/move/resize/clamp and eight
 handles; `CaptureSession` implements the start → drag → captured → move/resize →
 finish state machine and emits equivalent redraw/update events.
 
@@ -239,7 +239,7 @@ restore, colour picker/copy, AI masking, QR, pin, save, done, and a scrolling
 screenshot entry. "Ask AI" is a Tencent Yuanbao integration, not a local
 feature.
 
-ShotDesk: the toolbar implements rectangle, ellipse, arrow, brush, mosaic,
+Shotjoy: the toolbar implements rectangle, ellipse, arrow, brush, mosaic,
 text, colour palette, AI face masking, OCR/QR, scrolling capture, undo, pin,
 save, cancel, done. The cloud "Ask AI", sticker, and "send to chat" are not
 reproduced because they depend on WeChat's services.
@@ -262,7 +262,7 @@ keep it. The code imports `CGWindowListCopyWindowInfo` and per-display capture
 APIs, so the overlay is built per display and a window-picker can exclude the
 app's own PID.
 
-ShotDesk: captures every display at native scale, creates one overlay window per
+Shotjoy: captures every display at native scale, creates one overlay window per
 `NSScreen`, excludes its own windows by capturing before the overlay is shown,
 and highlights the topmost foreign window under the cursor.
 
@@ -287,7 +287,7 @@ This is a capture-loop architecture:
 4. Use OpenCV for image matching / stitching; enforce a maximum length; allow
    resuming at the interruption point.
 
-ShotDesk: `ScrollingCaptureController` grabs frames with
+Shotjoy: `ScrollingCaptureController` grabs frames with
 `CGDisplayCreateImageForRect`, `FrameStitcher` computes row-signature overlaps
 (no OpenCV dependency), and the app splices the full-resolution frames and
 enforces a 30,000-pixel / 120 M-pixel limit. The algorithm is a clean-room
@@ -312,13 +312,13 @@ magnifier exposes a colour value that can be copied with Ctrl/Cmd-C, QR
 recognition is built into the editor, and "AI masking" has dedicated UI and
 telemetry.
 
-ShotDesk: `PinWindowController` (floating non-activating panel), magnifier HUD
+Shotjoy: `PinWindowController` (floating non-activating panel), magnifier HUD
 with hex/coordinate readout, Apple Vision barcode detection, and Vision face
 detection feeding mosaic annotations. No cloud AI.
 
-## 9. What ShotDesk deliberately does differently
+## 9. What Shotjoy deliberately does differently
 
-| WeChat | ShotDesk |
+| WeChat | Shotjoy |
 |---|---|
 | C++ `weshot` + Qt/`mmui` editor | AppKit/SwiftUI, SwiftPM |
 | OpenCV stitch worker | pure Swift row-signature stitch |
