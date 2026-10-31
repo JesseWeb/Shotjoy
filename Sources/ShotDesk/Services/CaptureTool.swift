@@ -24,7 +24,7 @@ enum CaptureTool: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .none: return L10n.t("选择", "Select")
+        case .none: return L10n.moveSelect
         case .rectangle: return L10n.rectangle
         case .ellipse: return L10n.ellipse
         case .arrow: return L10n.arrow

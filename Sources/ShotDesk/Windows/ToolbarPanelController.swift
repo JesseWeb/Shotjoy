@@ -13,7 +13,7 @@ final class ToolbarPanelController {
 
     init(model: ToolbarModel) {
         panel = ToolbarPanel(
-            contentRect: CGRect(x: 0, y: 0, width: 672, height: 54),
+            contentRect: CGRect(x: 0, y: 0, width: 780, height: 54),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -29,7 +29,7 @@ final class ToolbarPanelController {
         panel.becomesKeyOnlyIfNeeded = true
         panel.contentView = NSHostingView(
             rootView: ToolbarView(model: model)
-                .frame(width: 672, height: 54)
+                .frame(width: 780, height: 54)
         )
     }
 

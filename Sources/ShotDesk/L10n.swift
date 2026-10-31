@@ -65,7 +65,11 @@ enum L10n {
     static var stitchFailed: String { t("拼接失败：没有找到重叠区域", "Could not stitch: no overlapping region found") }
     static var longScreenshot: String { t("长截图", "Long Screenshot") }
     static var recognize: String { t("识别", "Recognize") }
-    static var aiMask: String { t("AI 打码", "AI Masking") }
+    static var aiMask: String { t("AI 人脸打码", "AI Face Masking") }
+    static var noFacesDetected: String { t("未检测到人脸", "No faces detected") }
+    static var facesMasked: String { t("已为人脸打码", "Faces masked") }
+    static var maskFailed: String { t("打码失败", "Masking failed") }
+    static var moveSelect: String { t("移动 / 选择", "Move / Select") }
     static var undo: String { t("撤销", "Undo") }
     static var text: String { t("文字", "Text") }
     static var mosaic: String { t("马赛克", "Mosaic") }

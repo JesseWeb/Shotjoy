@@ -15,8 +15,9 @@ has no Dock icon and no network code.
 - **Full-screen overlay** — dimmed desktop, bright selection, eight resize
   handles, crosshair, pixel magnifier, live colour/coordinate readout.
 - **Window capture** — hover highlights the topmost window; click captures it.
-- **Annotations** — rectangle, ellipse, arrow, freehand brush, mosaic brush,
-  text, undo, six-colour palette, AI face masking.
+- **Annotations** — move/select, rectangle, ellipse, arrow, freehand brush,
+  mosaic brush, text, undo, a visible six-colour swatch palette, and AI face
+  masking (with a "no faces detected" toast instead of a silent no-op).
 - **Copy / save / pin** — `⌘C`, `⌘S`, or the pin button. Pinned shots float on
   top of all apps and can be copied, saved, dragged, or closed with a right-click.
 - **Scrolling screenshot** — select a region, click the scroll tool, scroll the
@@ -77,9 +78,10 @@ its own bundle id and reopens the pane.
 | Capture | `⌃⌘A`, or left-click the menu-bar icon |
 | Select region | Drag anywhere |
 | Capture a window | Click the highlighted window |
-| Move selection | Drag inside it with the pointer tool |
+| Move selection | Select the hand/pointer tool (the first toolbar button, active by default), then drag inside the selection |
 | Resize selection | Drag one of the eight handles |
-| Rectangle / ellipse / arrow / brush / mosaic / text | Pick a tool, then drag |
+| Rectangle / ellipse / arrow / brush / mosaic / text | Pick a tool, then drag; the stroke is previewed live |
+| Change drawing colour | Click a colour swatch; the selected one gets a white ring and checkmark |
 | Undo | `⌘Z` or the undo button |
 | Copy and close | `Return`, `⌘C`, or **Done** |
 | Save as PNG | `⌘S` or the save button |

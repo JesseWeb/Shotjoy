@@ -224,8 +224,12 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
                 to: canvasBounds
             )
         case .moving(let last, let original):
+            // Apply each incremental delta to the current rect. Using the
+            // original rect with an incremental delta would only move by the
+            // final mouse step.
             let delta = CGPoint(x: point.x - last.x, y: point.y - last.y)
-            selection = SelectionGeometry.moved(original, by: delta, within: canvasBounds)
+            let current = selection ?? original
+            selection = SelectionGeometry.moved(current, by: delta, within: canvasBounds)
             self.dragState = .moving(last: point, original: original)
             updateToolbarPosition()
         case .resizing(let handle, let original):
@@ -277,6 +281,15 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
         }
         self.selection = selection
         hoverWindowRect = nil
+        // Start in move/select mode so dragging inside the new selection
+        // moves it instead of drawing with a previously used tool.
+        activeTool = .none
+        toolbarModel.sync(
+            tool: activeTool,
+            color: strokeColor,
+            canUndo: annotations.canUndo,
+            hasSelection: true
+        )
         showToolbar()
         redraw()
     }
@@ -616,9 +629,16 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
 
     private func applyAIMask() {
         guard let selection, !isFinishing else { return }
-        guard let image = renderFinalImage(includeAnnotations: false) else { return }
+        guard let image = renderFinalImage(includeAnnotations: false) else {
+            ToastController.shared.show(L10n.maskFailed)
+            return
+        }
         VisionAnalyzer.detectFaces(in: image) { [weak self] faces in
-            guard let self, !faces.isEmpty else { return }
+            guard let self else { return }
+            guard !faces.isEmpty else {
+                ToastController.shared.show(L10n.noFacesDetected)
+                return
+            }
             for face in faces {
                 let topY = 1 - face.maxY
                 let global = CGRect(
@@ -644,6 +664,7 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
                 hasSelection: self.selection != nil
             )
             self.redraw()
+            ToastController.shared.show(L10n.facesMasked)
         }
     }
 

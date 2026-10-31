@@ -358,7 +358,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             VisionAnalyzer.recognizeText(in: image) { [weak self] text in
                 guard let self else { return }
                 guard !text.isEmpty else {
-                    self.showInfo(L10n.recognizeText, L10n.noText)
+                    ToastController.shared.show(L10n.noText)
                     return
                 }
                 self.copyText(text)
@@ -368,7 +368,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             VisionAnalyzer.detectQRCode(in: image) { [weak self] values in
                 guard let self else { return }
                 guard let first = values.first else {
-                    self.showInfo(L10n.scanQRCode, L10n.noQRCode)
+                    ToastController.shared.show(L10n.noQRCode)
                     return
                 }
                 self.copyText(first)

@@ -32,6 +32,12 @@ With the screen unlocked and Screen Recording granted:
 4. Clicking the **text recognition** toolbar button closed the overlay, copied
    the recognized text to the clipboard, and opened the floating
    **Recognize Text** result window.
+5. With the move/pointer tool active, dragging inside the selection moved the
+   whole selection (and the toolbar followed it).
+6. The colour palette showed all six swatches; clicking blue moved the white
+   ring and checkmark to blue.
+7. Clicking the AI face-masking button on a face-free selection showed the
+   "No faces detected" toast instead of doing nothing.
 
 ## Still worth a manual pass
 

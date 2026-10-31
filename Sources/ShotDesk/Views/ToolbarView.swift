@@ -5,7 +5,7 @@ import ShotDeskCore
 struct ToolbarView: View {
     @ObservedObject var model: ToolbarModel
 
-    private let tools: [CaptureTool] = [.rectangle, .ellipse, .arrow, .pen, .mosaic, .text]
+    private let tools: [CaptureTool] = [.none, .rectangle, .ellipse, .arrow, .pen, .mosaic, .text]
 
     var body: some View {
         HStack(spacing: 3) {
@@ -15,31 +15,11 @@ struct ToolbarView: View {
 
             divider
 
-            Menu {
-                ForEach(RGBAColor.palette, id: \.self) { color in
-                    Button {
-                        model.pick(color)
-                    } label: {
-                        Label {
-                            Text(colorName(color))
-                        } icon: {
-                            Image(systemName: "circle.fill").foregroundStyle(Color(nsColor: color.nsColor))
-                        }
-                    }
-                }
-            } label: {
-                Image(systemName: "paintpalette")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Color(nsColor: model.color.nsColor))
-                    .frame(width: 28, height: 28)
-                    .contentShape(Rectangle())
-            }
-            .menuStyle(.borderlessButton)
-            .menuIndicator(.hidden)
-            .help(L10n.color)
-            .frame(width: 30)
+            colorPalette
 
-            toolButton(symbol: "face.dashed", title: L10n.aiMask) {
+            divider
+
+            toolButton(symbol: "person.crop.rectangle", title: L10n.aiMask) {
                 model.onAIMask?()
             }
 
@@ -106,6 +86,40 @@ struct ToolbarView: View {
             .fill(Color.primary.opacity(0.15))
             .frame(width: 1, height: 20)
             .padding(.horizontal, 3)
+    }
+
+    private var colorPalette: some View {
+        HStack(spacing: 2) {
+            ForEach(RGBAColor.palette, id: \.self) { color in
+                Button {
+                    model.pick(color)
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(Color(nsColor: color.nsColor))
+                        Circle()
+                            .strokeBorder(Color.black.opacity(0.22), lineWidth: 0.5)
+                        if model.color == color {
+                            Circle()
+                                .strokeBorder(Color.white, lineWidth: 2)
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 8, weight: .black))
+                                .foregroundStyle(color == .white ? Color.black : Color.white)
+                        }
+                    }
+                    .frame(width: 18, height: 18)
+                    .padding(3)
+                    .background(
+                        Circle()
+                            .fill(model.color == color ? Color.white.opacity(0.12) : Color.clear)
+                    )
+                    .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .help(colorName(color))
+            }
+        }
+        .padding(.horizontal, 4)
     }
 
     private func toolButton(_ tool: CaptureTool) -> some View {
