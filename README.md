@@ -46,6 +46,7 @@ yourself? See below — then the app carries your own signature.
 - **Multi-display** — captures every display at native Retina resolution and
   supports selections that cross displays.
 - **Menu-bar app** — `LSUIElement`, launch-at-login, no Dock icon.
+- **Six UI languages** — English, 简体中文, 繁體中文, 日本語, Français and Español; follows the system by default and can be changed in Settings.
 
 ## Requirements
 

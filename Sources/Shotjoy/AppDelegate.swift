@@ -115,6 +115,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     self.showTextPreview(text, title: "OCR Test")
                 }
             }
+        } else if arguments.contains("--settings") {
+            DispatchQueue.main.async { [weak self] in
+                self?.settingsController?.show()
+            }
         } else if arguments.contains("--pin-test") {
             Task { @MainActor in
                 if let image = self.makeTestImage(width: 800, height: 600) {
@@ -488,7 +492,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let alert = NSAlert()
         alert.messageText = title
         alert.informativeText = body
-        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: L10n.ok)
         alert.runModal()
     }
 
@@ -498,7 +502,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         alert.messageText = title
         alert.informativeText = error.localizedDescription
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: L10n.ok)
         alert.runModal()
     }
 
@@ -764,12 +768,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
         let alert = NSAlert()
         alert.messageText = "Shotjoy（截趣）\(version)"
-        alert.informativeText = L10n.t(
-            "一个快速、纯本地的 macOS 截图工具。\n\n快捷键：\(preferences.shortcut.displayString)\n屏幕录制权限由 macOS 管理。",
-            "A fast, local-only macOS screenshot tool.\n\nShortcut: \(preferences.shortcut.displayString)\nScreen Recording is managed by macOS."
-        )
+        alert.informativeText = L10n.aboutBody(shortcut: preferences.shortcut.displayString)
         alert.icon = NSApp.applicationIconImage
-        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: L10n.ok)
         alert.runModal()
     }
 }

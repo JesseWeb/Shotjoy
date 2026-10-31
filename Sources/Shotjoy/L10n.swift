@@ -1,15 +1,28 @@
 import Foundation
 
-/// A deliberately tiny localization layer. Shotjoy ships two UI languages
-/// (Simplified Chinese and English) and picks one from the system preference;
-/// no resource bundles are needed, which keeps `make-app.sh` simple.
+/// A deliberately small localization layer. The app supports English,
+/// Simplified Chinese, Traditional Chinese, Japanese, French and Spanish; the
+/// active language can follow the system or be chosen in Settings.
 enum L10n {
+    static var current: AppLanguage { LanguageManager.shared.resolved }
+
     static var isChinese: Bool {
-        Locale.preferredLanguages.first?.hasPrefix("zh") == true
+        current == .simplifiedChinese || current == .traditionalChinese
     }
 
     static func t(_ chinese: String, _ english: String) -> String {
-        isChinese ? chinese : english
+        switch current {
+        case .english:
+            return english
+        case .simplifiedChinese:
+            return chinese
+        case .traditionalChinese:
+            return Translations.text(english, language: .traditionalChinese) ?? chinese
+        case .japanese, .french, .spanish:
+            return Translations.text(english, language: current) ?? english
+        case .system:
+            return english
+        }
     }
 
     static var appName: String { "Shotjoy" }
@@ -25,6 +38,7 @@ enum L10n {
     static var about: String { t("关于 Shotjoy（截趣）", "About Shotjoy") }
     static var quit: String { t("退出 Shotjoy", "Quit Shotjoy") }
     static var fixScreenPermission: String { t("修复屏幕录制权限…", "Fix Screen Recording Permission…") }
+    static var fixPermissionShort: String { t("修复权限…", "Fix Permission…") }
     static var checkPermission: String { t("检查屏幕录制权限…", "Check Screen Recording Permission…") }
     static var permissionTitle: String { t("需要屏幕录制权限", "Screen Recording Permission Needed") }
     static var permissionBody: String {
@@ -78,10 +92,47 @@ enum L10n {
     static var ellipse: String { t("椭圆", "Ellipse") }
     static var rectangle: String { t("矩形", "Rectangle") }
     static var color: String { t("颜色", "Color") }
+    static var language: String { t("语言", "Language") }
+    static var followSystem: String { t("跟随系统", "Follow System") }
+    static var ok: String { t("好", "OK") }
     static var captureTip: String {
         t("拖动选择区域，单击窗口可直接截图；Esc 取消", "Drag to select, click a window to capture it; Esc to cancel")
     }
     static var permissionsHint: String {
         t("截图权限由 macOS 管理；重新签名后可能需要重新授权。", "Screen Recording is managed by macOS; a re-signed build may need a fresh grant.")
+    }
+
+    static func framesCaptured(_ count: Int) -> String {
+        switch current {
+        case .simplifiedChinese:
+            return "已捕获 \(count) 帧"
+        case .traditionalChinese:
+            return "已擷取 \(count) 幀"
+        case .japanese:
+            return "\(count) フレームを取得しました"
+        case .french:
+            return "\(count) images capturées"
+        case .spanish:
+            return "\(count) fotogramas capturados"
+        case .english, .system:
+            return "\(count) frames captured"
+        }
+    }
+
+    static func aboutBody(shortcut: String) -> String {
+        switch current {
+        case .simplifiedChinese:
+            return "一个快速、纯本地的 macOS 截图工具。\n\n快捷键：\(shortcut)\n屏幕录制权限由 macOS 管理。"
+        case .traditionalChinese:
+            return "一個快速、純本機的 macOS 截圖工具。\n\n快速鍵：\(shortcut)\n螢幕錄製權限由 macOS 管理。"
+        case .japanese:
+            return "高速でローカル完結の macOS スクリーンショットツール。\n\nショートカット：\(shortcut)\n画面収録の権限は macOS が管理します。"
+        case .french:
+            return "Un outil de capture d'écran macOS rapide et 100 % local.\n\nRaccourci : \(shortcut)\nL'enregistrement de l'écran est géré par macOS."
+        case .spanish:
+            return "Una herramienta de captura de pantalla macOS rápida y totalmente local.\n\nAtajo: \(shortcut)\nLa grabación de pantalla la gestiona macOS."
+        case .english, .system:
+            return "A fast, local-only macOS screenshot tool.\n\nShortcut: \(shortcut)\nScreen Recording is managed by macOS."
+        }
     }
 }

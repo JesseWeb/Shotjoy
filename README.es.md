@@ -52,6 +52,9 @@ llevará tu propia firma.
   selecciones que cruzan pantallas.
 - **App de barra de menús** — `LSUIElement`, inicio al iniciar sesión, sin icono
   en el Dock.
+- **Seis idiomas de interfaz** — inglés, chino simplificado, chino tradicional,
+  japonés, francés y español; sigue el sistema por defecto y se cambia en
+  Ajustes.
 
 ## Requisitos
 

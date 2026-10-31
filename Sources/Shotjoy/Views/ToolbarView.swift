@@ -4,6 +4,7 @@ import ShotjoyCore
 
 struct ToolbarView: View {
     @ObservedObject var model: ToolbarModel
+    @ObservedObject private var languageManager = LanguageManager.shared
 
     private let tools: [CaptureTool] = [.none, .rectangle, .ellipse, .arrow, .pen, .mosaic, .text]
 

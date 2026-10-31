@@ -8,6 +8,7 @@ final class ScrollingHUDModel: ObservableObject {
 
 struct ScrollingHUDView: View {
     @ObservedObject var model: ScrollingHUDModel
+    @ObservedObject private var languageManager = LanguageManager.shared
 
     var body: some View {
         HStack(spacing: 12) {
@@ -20,7 +21,7 @@ struct ScrollingHUDView: View {
                 Text(L10n.scrollInstructions)
                     .font(.system(size: 10.5))
                     .foregroundStyle(.secondary)
-                Text(L10n.t("已捕获 \(model.frameCount) 帧", "\(model.frameCount) frames captured"))
+                Text(L10n.framesCaptured(model.frameCount))
                     .font(.system(size: 10))
                     .foregroundStyle(.tertiary)
             }

@@ -15,6 +15,7 @@ final class StatusItemController: NSObject {
 
     private let statusItem: NSStatusItem
     private var shortcutTitle = HotKeyConfig.default.displayString
+    private var languageObserver: NSObjectProtocol?
 
     override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
@@ -28,17 +29,35 @@ final class StatusItemController: NSObject {
             button.target = self
             button.action = #selector(statusItemClicked(_:))
             _ = button.sendAction(on: [.leftMouseUp, .rightMouseUp])
-            button.toolTip = "Shotjoy — \(L10n.screenshot) (⌃⌘A)"
+            button.toolTip = tooltip
+        }
+        languageObserver = NotificationCenter.default.addObserver(
+            forName: .shotjoyLanguageDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateLanguage()
         }
     }
 
     deinit {
+        if let languageObserver {
+            NotificationCenter.default.removeObserver(languageObserver)
+        }
         NSStatusBar.system.removeStatusItem(statusItem)
+    }
+
+    private var tooltip: String {
+        "Shotjoy — \(L10n.screenshot) (\(shortcutTitle))"
     }
 
     func updateShortcut(_ shortcut: HotKeyConfig) {
         shortcutTitle = shortcut.displayString
-        statusItem.button?.toolTip = "Shotjoy — \(L10n.screenshot) (\(shortcutTitle))"
+        statusItem.button?.toolTip = tooltip
+    }
+
+    func updateLanguage() {
+        statusItem.button?.toolTip = tooltip
     }
 
     @objc private func statusItemClicked(_ sender: NSStatusBarButton) {

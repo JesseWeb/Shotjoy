@@ -96,6 +96,7 @@ final class SettingsModel: ObservableObject {
 
 struct SettingsView: View {
     @ObservedObject var model: SettingsModel
+    @ObservedObject private var languageManager = LanguageManager.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -110,6 +111,22 @@ struct SettingsView: View {
                         .font(.system(size: 11.5))
                         .foregroundStyle(.secondary)
                 }
+            }
+
+            HStack {
+                Text(L10n.language)
+                Spacer()
+                Picker("", selection: Binding(
+                    get: { languageManager.selection },
+                    set: { languageManager.set($0) }
+                )) {
+                    ForEach(AppLanguage.allCases) { language in
+                        Text(language == .system ? L10n.followSystem : language.nativeName)
+                            .tag(language)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 190)
             }
 
             GroupBox(L10n.t("截图", "Capture")) {
@@ -175,7 +192,7 @@ struct SettingsView: View {
                     }
                     HStack {
                         Button(L10n.openSettings) { model.onOpenPermission?() }
-                        Button(L10n.fixScreenPermission) { model.onResetPermission?() }
+                        Button(L10n.fixPermissionShort) { model.onResetPermission?() }
                         Button(L10n.t("刷新", "Refresh")) { model.refresh() }
                     }
                     .controlSize(.small)
@@ -206,6 +223,6 @@ struct SettingsView: View {
             }
         }
         .padding(22)
-        .frame(width: 470, height: 470)
+        .frame(width: 470, height: 510)
     }
 }

@@ -13,6 +13,7 @@ final class PreviewModel: ObservableObject {
 
 struct PreviewView: View {
     @ObservedObject var model: PreviewModel
+    @ObservedObject private var languageManager = LanguageManager.shared
 
     var body: some View {
         VStack(spacing: 0) {

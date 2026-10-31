@@ -52,6 +52,9 @@ vous-même : l'app portera alors votre propre signature.
   les sélections qui traversent plusieurs écrans.
 - **App de barre des menus** — `LSUIElement`, lancement à l'ouverture de session,
   pas d'icône dans le Dock.
+- **Six langues d'interface** — anglais, chinois simplifié, chinois traditionnel,
+  japonais, français et espagnol ; suit le système par défaut et se change dans
+  les réglages.
 
 ## Prérequis
 
