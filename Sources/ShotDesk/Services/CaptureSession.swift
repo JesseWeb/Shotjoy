@@ -93,6 +93,9 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
             views.append(view)
         }
 
+        NSApp.activate()
+        _ = NSRunningApplication.current.activate(options: [.activateAllWindows])
+
         let mouse = CGEvent(source: nil)?.location ?? CGPoint(x: canvasBounds.midX, y: canvasBounds.midY)
         cursorPoint = mouse
         if let index = screens.firstIndex(where: { $0.bounds.contains(mouse) }) {
@@ -101,9 +104,6 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
         } else if let first = windows.first {
             first.makeKeyAndOrderFront(nil)
         }
-
-        NSApp.activate()
-        _ = NSRunningApplication.current.activate(options: [.activateAllWindows])
         NSCursor.crosshair.set()
 
 
