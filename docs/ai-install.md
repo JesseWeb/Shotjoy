@@ -1,0 +1,64 @@
+# Install ShotDesk with an AI agent
+
+ShotDesk has no installer and no download button on purpose: you build it from
+source on your own Mac, so the app carries **your** code signature and your
+Screen Recording grant stays stable.
+
+## What you need
+
+- macOS 14 or newer with Xcode 15+ installed (`xcodebuild -version` works)
+- A coding agent that can run shell commands: Claude Code, Codex, Cursor,
+  Gemini CLI, OpenCode, or similar
+
+## Copy-paste prompt
+
+### 简体中文
+
+> 帮我在这台 Mac 上安装 ShotDesk：
+> 1. 把仓库克隆到 ~/Developer/ShotDesk
+> 2. 阅读仓库里的 AGENTS.md，按它执行 `swift test` 和 `./scripts/make-app.sh release`
+> 3. 把 `dist/ShotDesk.app` 安装到 /Applications 并启动
+> 4. 引导我在「系统设置 → 隐私与安全性 → 屏幕录制」中授权，然后实际按 ⌃⌘A 截图并粘贴验证
+> 5. 如果微信占用了 ⌃⌘A，帮我在 ShotDesk 设置里换一个快捷键
+> 6. 最后告诉我：签名身份、权限状态、数据位置、怎么卸载
+
+### English
+
+> Install ShotDesk on this Mac:
+> 1. Clone the repository to ~/Developer/ShotDesk
+> 2. Read AGENTS.md in the repo, then run `swift test` and `./scripts/make-app.sh release`
+> 3. Install `dist/ShotDesk.app` to /Applications and launch it
+> 4. Walk me through the Screen Recording grant in System Settings → Privacy & Security, then verify a real ⌃⌘A capture and paste
+> 5. If WeChat owns ⌃⌘A, change ShotDesk's shortcut in Settings
+> 6. Tell me which signing identity was used, the permission state, where data lives, and how to uninstall
+
+## What the agent will do
+
+1. Check macOS/Xcode versions.
+2. `git clone` the repository into a working folder.
+3. `swift test` (23 core tests, no UI) and `./scripts/make-app.sh release`.
+4. Copy the bundle to `/Applications/ShotDesk.app` and launch it.
+5. Ask you to switch ShotDesk on under
+   **System Settings → Privacy & Security → Screen Recording**.
+6. Press `⌃⌘A`, select a region, click **Done**, and paste into TextEdit.
+7. Optionally build `dist/ShotDesk-1.0.0.dmg` with `./scripts/make-dmg.sh release`.
+
+## What the agent cannot do for you
+
+- Flip the Screen Recording switch. macOS only accepts that from a human in
+  System Settings.
+- Unlock the screen. Overlay windows cannot receive clicks while macOS is locked.
+- Approve the login item, if you enable *Launch at Login*.
+
+## If something goes wrong
+
+| Message | Meaning |
+|---|---|
+| `xcodebuild: error: tool 'xcodebuild' requires Xcode` | Only Command Line Tools are installed — install Xcode |
+| The Screen Recording switch is on but ShotDesk still asks | Ad-hoc signature changed after a rebuild: menu-bar icon → **Fix Screen Recording Permission…** |
+| `⌃⌘A` does nothing | WeChat or another app owns the shortcut: quit it or change ShotDesk's shortcut in Settings |
+| The overlay appears but clicks do nothing | The screen is locked, or another app is in a secure-input state: unlock and retry |
+| Scrolling capture has a seam | Scroll more slowly, or select a region with more texture |
+
+Everything here is also in [`AGENTS.md`](../AGENTS.md) and the
+[`README`](../README.md).
