@@ -20,14 +20,52 @@ d'icône dans le Dock et n'envoie rien sur le réseau.
 Appuyez sur **⌃⌘A** (Control-Command-A), faites glisser une zone ou cliquez une
 fenêtre, annotez, puis copiez, enregistrez ou épinglez la capture sur le bureau.
 
-## Téléchargement
+## Installation
+
+Trois façons d'installer Shotjoy. Choisissez-en une.
+
+### 1. Télécharger le DMG
 
 [**Dernière version →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
 
 Le DMG de la release est signé ad-hoc (non notarié). Au premier lancement,
 faites un clic droit sur Shotjoy → **Ouvrir** → **Ouvrir**, puis accordez
-l'autorisation **Enregistrement de l'écran**. Vous pouvez aussi le compiler
-vous-même : l'app portera alors votre propre signature.
+l'autorisation **Enregistrement de l'écran**.
+
+### 2. Compiler soi-même
+
+```sh
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
+cd ~/Developer/Shotjoy
+swift test                       # tests géométrie/assemblage
+./scripts/make-app.sh release    # -> dist/Shotjoy.app
+cp -R dist/Shotjoy.app /Applications/
+open /Applications/Shotjoy.app
+```
+
+`make-app.sh` choisit l'identité de signature disponible sur la machine :
+`SHOTJOY_SIGN_IDENTITY`, puis Developer ID, puis Apple Development, puis ad-hoc.
+Une compilation locale porte votre propre signature : l'autorisation
+d'enregistrement de l'écran reste valide après un nouveau build. Pour une image
+disque à glisser dans Applications, lancez `./scripts/make-dmg.sh release`
+(→ `dist/Shotjoy-1.0.3.dmg`) ; la notarisation est facultative et décrite dans
+[`docs/distribution.md`](docs/distribution.md).
+
+### 3. Laisser un agent IA l'installer
+
+Collez ceci dans Claude Code, Codex, Cursor, Gemini CLI ou OpenCode :
+
+> Installe Shotjoy sur ce Mac : clone https://github.com/JesseWeb/Shotjoy dans
+> ~/Developer/Shotjoy, suis AGENTS.md, lance `swift test` et
+> `./scripts/make-app.sh release`, installe `dist/Shotjoy.app` dans
+> /Applications et démarre-le, puis guide-moi pour l'autorisation
+> **Enregistrement de l'écran** et vérifie une vraie capture ⌃⌘A collée dans
+> TextEdit.
+
+Les prompts complets en six langues sont dans
+[`docs/ai-install.md`](docs/ai-install.md). L'agent peut compiler, installer et
+vérifier, mais il ne peut pas activer l'enregistrement de l'écran : macOS
+n'accepte cette autorisation que de votre part dans Réglages Système.
 
 ## Fonctionnalités
 
@@ -59,30 +97,9 @@ vous-même : l'app portera alors votre propre signature.
 ## Prérequis
 
 - macOS 14 Sonoma ou plus récent (API ScreenCaptureKit)
-- Xcode 15+ avec le SDK macOS (`xcodebuild -version` doit fonctionner)
+- Xcode 15+ avec le SDK macOS, uniquement pour compiler
+  (`xcodebuild -version` doit fonctionner)
 - Aucune dépendance tierce, aucun registre de paquets, aucun réseau à l'exécution
-
-## Compilation et installation
-
-```sh
-git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
-cd ~/Developer/Shotjoy
-swift test                       # tests cœur : géométrie et assemblage
-./scripts/make-app.sh release    # -> dist/Shotjoy.app
-cp -R dist/Shotjoy.app /Applications/
-open /Applications/Shotjoy.app
-```
-
-Créer un DMG à glisser dans Applications :
-
-```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.3.dmg
-```
-
-`make-app.sh` choisit l'identité de signature disponible :
-`SHOTJOY_SIGN_IDENTITY`, puis Developer ID, Apple Development, puis ad-hoc. Le
-DMG est signé avec la même identité quand c'est possible. La notarisation est
-optionnelle et documentée dans [`docs/distribution.md`](docs/distribution.md).
 
 ## Premier lancement : autorisation d'enregistrement de l'écran
 

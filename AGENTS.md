@@ -166,7 +166,7 @@ If the shortcut does nothing:
   scroll and content with enough texture. Very fast jumps or long blank areas
   can produce a seam.
 - **AI features are local.** OCR/QR/face detection use Apple Vision. There is
-  there is no cloud AI feature. The AI button is **face masking**, not an
+  no cloud AI feature. The AI button is **face masking**, not an
   emoji/sticker tool; if no face is detected it shows a toast.
 - **Pins are session-only.** Pinned images disappear when Shotjoy quits.
 - **No history.** Only the last screenshot is kept in memory for the menu.

@@ -19,13 +19,49 @@ the menu bar, has no Dock icon, and sends nothing over the network.
 Press **⌃⌘A** (Control-Command-A), drag a region or click a window, annotate it,
 then copy, save, or pin it to the desktop.
 
-## Download
+## Install
+
+Three ways to get Shotjoy. Pick one.
+
+### 1. Download the DMG
 
 [**Latest release →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
 
 The release DMG is ad-hoc signed (not notarized). On first launch, right-click
-Shotjoy → **Open** → **Open**, then grant Screen Recording. Prefer compiling it
-yourself? See below — then the app carries your own signature.
+Shotjoy → **Open** → **Open**, then grant Screen Recording.
+
+### 2. Build it yourself
+
+```sh
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
+cd ~/Developer/Shotjoy
+swift test                       # core geometry/stitching tests
+./scripts/make-app.sh release    # -> dist/Shotjoy.app
+cp -R dist/Shotjoy.app /Applications/
+open /Applications/Shotjoy.app
+```
+
+`make-app.sh` picks the signing identity available on the build machine:
+`SHOTJOY_SIGN_IDENTITY`, then Developer ID, then Apple Development, then
+ad-hoc. Building it yourself means the app carries your own signature, so the
+Screen Recording grant stays stable across rebuilds. For a drag-to-Applications
+disk image run `./scripts/make-dmg.sh release` (→ `dist/Shotjoy-1.0.3.dmg`);
+notarization is optional and documented in
+[`docs/distribution.md`](docs/distribution.md).
+
+### 3. Let an AI agent install it
+
+Paste this into Claude Code, Codex, Cursor, Gemini CLI or OpenCode:
+
+> Install Shotjoy on this Mac: clone https://github.com/JesseWeb/Shotjoy to
+> ~/Developer/Shotjoy, follow AGENTS.md, run `swift test` and
+> `./scripts/make-app.sh release`, install `dist/Shotjoy.app` to /Applications
+> and launch it, then walk me through the Screen Recording grant and verify a
+> real ⌃⌘A capture pasted into TextEdit.
+
+Full prompts in six languages live in [`docs/ai-install.md`](docs/ai-install.md).
+The agent can build, install and verify, but it cannot flip the Screen Recording
+switch — macOS only accepts that from you in System Settings.
 
 ## Features
 
@@ -51,30 +87,9 @@ yourself? See below — then the app carries your own signature.
 ## Requirements
 
 - macOS 14 Sonoma or newer (ScreenCaptureKit screenshot API)
-- Xcode 15+ with the macOS SDK (`xcodebuild -version` must work)
+- Xcode 15+ with the macOS SDK, only when building from source
+  (`xcodebuild -version` must work)
 - No third-party dependencies, no package registry, no network at runtime
-
-## Build and install
-
-```sh
-git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
-cd ~/Developer/Shotjoy
-swift test                       # core geometry/stitching tests
-./scripts/make-app.sh release    # -> dist/Shotjoy.app
-cp -R dist/Shotjoy.app /Applications/
-open /Applications/Shotjoy.app
-```
-
-Build a drag-to-Applications disk image:
-
-```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.3.dmg
-```
-
-`make-app.sh` picks the signing identity available on the build machine:
-`SHOTJOY_SIGN_IDENTITY`, then Developer ID, then Apple Development, then
-ad-hoc. The DMG is signed with the same identity when possible. Notarization is
-optional and documented in [`docs/distribution.md`](docs/distribution.md).
 
 ## First run: Screen Recording permission
 

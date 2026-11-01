@@ -20,14 +20,51 @@ no tiene icono en el Dock y no envía nada por la red.
 Pulsa **⌃⌘A** (Control-Command-A), arrastra una región o haz clic en una ventana,
 añade anotaciones y luego copia, guarda o fija la captura en el escritorio.
 
-## Descarga
+## Instalación
+
+Tres formas de instalar Shotjoy. Elige una.
+
+### 1. Descargar el DMG
 
 [**Última versión →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
 
 El DMG de la release está firmado ad-hoc (sin notarizar). En el primer inicio,
 haz clic derecho en Shotjoy → **Abrir** → **Abrir**, y concede el permiso
-**Grabación de pantalla**. También puedes compilarla tú mismo: la app
-llevará tu propia firma.
+**Grabación de pantalla**.
+
+### 2. Compilarla tú mismo
+
+```sh
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
+cd ~/Developer/Shotjoy
+swift test                       # pruebas de geometría/ensamblado
+./scripts/make-app.sh release    # -> dist/Shotjoy.app
+cp -R dist/Shotjoy.app /Applications/
+open /Applications/Shotjoy.app
+```
+
+`make-app.sh` elige la identidad de firma disponible en la máquina:
+`SHOTJOY_SIGN_IDENTITY`, luego Developer ID, luego Apple Development y por
+último ad-hoc. Una compilación propia lleva tu firma, así que el permiso de
+grabación de pantalla se mantiene al recompilar. Para una imagen de disco
+arrastrable a Aplicaciones ejecuta `./scripts/make-dmg.sh release`
+(→ `dist/Shotjoy-1.0.3.dmg`); la notarización es opcional y está documentada en
+[`docs/distribution.md`](docs/distribution.md).
+
+### 3. Dejar que un agente de IA la instale
+
+Pega esto en Claude Code, Codex, Cursor, Gemini CLI u OpenCode:
+
+> Instala Shotjoy en este Mac: clona https://github.com/JesseWeb/Shotjoy en
+> ~/Developer/Shotjoy, sigue AGENTS.md, ejecuta `swift test` y
+> `./scripts/make-app.sh release`, instala `dist/Shotjoy.app` en /Applications
+> y ábrelo; luego guíame para conceder **Grabación de pantalla** y verifica una
+> captura real con ⌃⌘A pegada en TextEdit.
+
+Los prompts completos en seis idiomas están en
+[`docs/ai-install.md`](docs/ai-install.md). El agente puede compilar, instalar y
+verificar, pero no puede activar el interruptor de grabación de pantalla: macOS
+solo acepta esa autorización de ti, en Ajustes del Sistema.
 
 ## Funciones
 
@@ -59,30 +96,9 @@ llevará tu propia firma.
 ## Requisitos
 
 - macOS 14 Sonoma o posterior (API ScreenCaptureKit)
-- Xcode 15+ con el SDK de macOS (`xcodebuild -version` debe funcionar)
+- Xcode 15+ con el SDK de macOS, solo para compilar
+  (`xcodebuild -version` debe funcionar)
 - Sin dependencias de terceros, sin registro de paquetes, sin red en ejecución
-
-## Compilar e instalar
-
-```sh
-git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
-cd ~/Developer/Shotjoy
-swift test                       # pruebas de geometría y unión
-./scripts/make-app.sh release    # -> dist/Shotjoy.app
-cp -R dist/Shotjoy.app /Applications/
-open /Applications/Shotjoy.app
-```
-
-Crear un DMG para arrastrar a Aplicaciones:
-
-```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.3.dmg
-```
-
-`make-app.sh` elige la identidad de firma disponible: `SHOTJOY_SIGN_IDENTITY`,
-luego Developer ID, Apple Development y finalmente ad-hoc. El DMG se firma con
-la misma identidad cuando es posible. La notarización es opcional y está
-documentada en [`docs/distribution.md`](docs/distribution.md).
 
 ## Primer inicio: permiso de grabación de pantalla
 

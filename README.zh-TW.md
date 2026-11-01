@@ -18,13 +18,47 @@ AI 人臉打碼。它只住在選單列，沒有 Dock 圖示，也不會把任�
 按 **⌃⌘A**（Control-Command-A），拖曳選取範圍或按一下視窗，完成標註後複製、
 儲存或貼到桌面。
 
-## 下載
+## 安裝
+
+三種方式，任選其一。
+
+### 1. 下載 DMG
 
 [**最新 Release →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
 
 Release 中的 DMG 使用 ad-hoc 簽章（未公證）。首次啟動請右鍵 Shotjoy →
-**打開** → **打開**，然後授予「螢幕錄製」權限。也可以自行編譯，這樣 App
-會帶上你自己的簽章。
+**打開** → **打開**，然後授予「螢幕錄製」權限。
+
+### 2. 自行編譯
+
+```sh
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
+cd ~/Developer/Shotjoy
+swift test                       # 核心幾何/拼接測試
+./scripts/make-app.sh release    # -> dist/Shotjoy.app
+cp -R dist/Shotjoy.app /Applications/
+open /Applications/Shotjoy.app
+```
+
+`make-app.sh` 會依序選擇簽章身分：`SHOTJOY_SIGN_IDENTITY`、Developer ID、
+Apple Development、ad-hoc。自行編譯的 App 會帶上你自己的簽章，重新編譯後
+「螢幕錄製」授權也不會失效。想做成可拖入「應用程式」的 DMG，執行
+`./scripts/make-dmg.sh release`（→ `dist/Shotjoy-1.0.3.dmg`）；公證是選項，
+詳見 [`docs/distribution.md`](docs/distribution.md)。
+
+### 3. 交給 AI 安裝
+
+把下面這段傳給 Claude Code、Codex、Cursor、Gemini CLI 或 OpenCode：
+
+> 在這台 Mac 上安裝 Shotjoy：把 https://github.com/JesseWeb/Shotjoy 克隆到
+> ~/Developer/Shotjoy，依倉庫裡的 AGENTS.md 執行 `swift test` 和
+> `./scripts/make-app.sh release`，把 `dist/Shotjoy.app` 安裝到 /Applications
+> 並啟動，然後引導我在「系統設定 → 隱私權與安全性 → 螢幕錄製」中授權，最後
+> 實際按 ⌃⌘A 截圖並貼到 TextEdit 驗證。
+
+六種語言的完整提示詞在 [`docs/ai-install.md`](docs/ai-install.md)。AI 能完成
+編譯、安裝與驗證，但無法替你打開「螢幕錄製」開關——macOS 只接受你在系統設定裡
+手動授權。
 
 ## 功能
 
@@ -48,29 +82,8 @@ Release 中的 DMG 使用 ad-hoc 簽章（未公證）。首次啟動請右鍵 S
 ## 系統需求
 
 - macOS 14 Sonoma 或更新（ScreenCaptureKit 截圖 API）
-- Xcode 15+ 與 macOS SDK（`xcodebuild -version` 必須可用）
+- Xcode 15+ 與 macOS SDK，僅在自行編譯時需要（`xcodebuild -version` 必須可用）
 - 無第三方相依套件、無套件管理器、無執行時網路存取
-
-## 建置與安裝
-
-```sh
-git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
-cd ~/Developer/Shotjoy
-swift test                       # 核心幾何/拼接測試
-./scripts/make-app.sh release    # -> dist/Shotjoy.app
-cp -R dist/Shotjoy.app /Applications/
-open /Applications/Shotjoy.app
-```
-
-建置可拖進「應用程式」的 DMG：
-
-```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.3.dmg
-```
-
-`make-app.sh` 會依序選擇簽章身分：`SHOTJOY_SIGN_IDENTITY`、Developer ID、
-Apple Development、ad-hoc。DMG 也會盡量使用相同身分簽章。公證是選項，
-詳見 [`docs/distribution.md`](docs/distribution.md)。
 
 ## 首次執行：螢幕錄製權限
 

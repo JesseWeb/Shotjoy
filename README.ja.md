@@ -19,13 +19,49 @@ Shotjoy（截趣）は高速でローカル完結の macOS スクリーンショ
 **⌃⌘A**（Control-Command-A）を押し、範囲をドラッグするかウィンドウを
 クリックして、注釈を付けたらコピー・保存・デスクトップへのピン留めができます。
 
-## ダウンロード
+## インストール
+
+3 つの方法から選べます。
+
+### 1. DMG をダウンロード
 
 [**最新 Release →**](https://github.com/JesseWeb/Shotjoy/releases/latest)
 
 Release の DMG は ad-hoc 署名（未公証）です。初回起動時は Shotjoy を右クリック
-→ **開く** → **開く** を選び、その後「画面収録」を許可してください。自分で
-ビルドすれば、自分の署名を付けた App になります。
+→ **開く** → **開く** を選び、その後「画面収録」を許可してください。
+
+### 2. 自分でビルド
+
+```sh
+git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
+cd ~/Developer/Shotjoy
+swift test                       # コアの幾何/結合テスト
+./scripts/make-app.sh release    # -> dist/Shotjoy.app
+cp -R dist/Shotjoy.app /Applications/
+open /Applications/Shotjoy.app
+```
+
+`make-app.sh` は `SHOTJOY_SIGN_IDENTITY`、Developer ID、Apple Development、
+ad-hoc の順で利用可能な署名 ID を選びます。自分でビルドした App には自分の署名が
+付くため、再ビルド後も「画面収録」の許可が維持されます。Applications へ
+ドラッグできる DMG は `./scripts/make-dmg.sh release`
+（→ `dist/Shotjoy-1.0.3.dmg`）で作成でき、公証は任意です
+（[`docs/distribution.md`](docs/distribution.md)）。
+
+### 3. AI エージェントに任せる
+
+Claude Code、Codex、Cursor、Gemini CLI、OpenCode のいずれかに次を貼り付けます。
+
+> この Mac に Shotjoy をインストールしてください：https://github.com/JesseWeb/Shotjoy
+> を ~/Developer/Shotjoy にクローンし、リポジトリの AGENTS.md に従って
+> `swift test` と `./scripts/make-app.sh release` を実行、`dist/Shotjoy.app` を
+> /Applications にコピーして起動してください。その後「システム設定 →
+> プライバシーとセキュリティ → 画面収録」の許可を案内し、実際に ⌃⌘A で撮影して
+> TextEdit に貼り付けるところまで確認してください。
+
+6 言語の完全なプロンプトは [`docs/ai-install.md`](docs/ai-install.md) にあります。
+AI はビルド・インストール・確認まで行えますが、「画面収録」のスイッチは
+切り替えられません。macOS はシステム設定での手動許可だけを受け付けます。
 
 ## 機能
 
@@ -50,29 +86,9 @@ Release の DMG は ad-hoc 署名（未公証）です。初回起動時は Shot
 ## 動作環境
 
 - macOS 14 Sonoma 以降（ScreenCaptureKit のスクリーンショット API）
-- Xcode 15+ と macOS SDK（`xcodebuild -version` が動作すること）
+- Xcode 15+ と macOS SDK（ソースからビルドする場合のみ。
+  `xcodebuild -version` が動作すること）
 - サードパーティ依存なし、パッケージレジストリなし、実行時のネットワーク通信なし
-
-## ビルドとインストール
-
-```sh
-git clone https://github.com/JesseWeb/Shotjoy.git ~/Developer/Shotjoy
-cd ~/Developer/Shotjoy
-swift test                       # コアの幾何/結合テスト
-./scripts/make-app.sh release    # -> dist/Shotjoy.app
-cp -R dist/Shotjoy.app /Applications/
-open /Applications/Shotjoy.app
-```
-
-アプリケーションフォルダへドラッグできる DMG を作成：
-
-```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.3.dmg
-```
-
-`make-app.sh` は `SHOTJOY_SIGN_IDENTITY`、Developer ID、Apple Development、
-ad-hoc の順で署名 ID を選びます。DMG も可能なら同じ ID で署名します。公証は
-任意で、[`docs/distribution.md`](docs/distribution.md) に手順があります。
 
 ## 初回起動：画面収録の権限
 

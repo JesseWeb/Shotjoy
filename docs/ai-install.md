@@ -1,8 +1,12 @@
 # Install Shotjoy with an AI agent
 
-Shotjoy has no installer and no download button on purpose: you build it from
-source on your own Mac, so the app carries **your** code signature and your
-Screen Recording grant stays stable.
+Shotjoy ships a signed DMG, but building from source is still the most reliable
+route: the app then carries **your** code signature, so the Screen Recording
+grant stays stable across rebuilds. This page is the prompt that hands that job
+to a coding agent.
+
+Prefer to do it by hand? See **Install → Build it yourself** in the
+[README](../README.md#install).
 
 ## What you need
 
