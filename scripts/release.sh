@@ -86,18 +86,34 @@ APP="dist/Shotjoy.app"
 
 test -f "$DMG"
 codesign --verify --strict --deep "$APP"
-codesign -dv --verbose=2 "$APP" 2>&1 | grep -q "Signature=adhoc" || {
-    echo "error: expected an ad-hoc signed release build" >&2
-    exit 1
-}
-lipo -archs "$APP/Contents/MacOS/Shotjoy" | grep -q "arm64" || {
-    echo "error: arm64 slice missing" >&2
-    exit 1
-}
-lipo -archs "$APP/Contents/MacOS/Shotjoy" | grep -q "x86_64" || {
-    echo "error: x86_64 slice missing" >&2
-    exit 1
-}
+
+# Capture the output instead of piping into `grep -q`: grep exits on the first
+# match, codesign then dies of SIGPIPE, and `pipefail` fails an otherwise good
+# build.
+SIGNATURE_INFO="$(codesign -dv --verbose=2 "$APP" 2>&1 || true)"
+case "$SIGNATURE_INFO" in
+    *"Signature=adhoc"*) ;;
+    *)
+        echo "error: expected an ad-hoc signed release build" >&2
+        exit 1
+        ;;
+esac
+
+ARCHS="$(lipo -archs "$APP/Contents/MacOS/Shotjoy")"
+case "$ARCHS" in
+    *arm64*) ;;
+    *)
+        echo "error: arm64 slice missing" >&2
+        exit 1
+        ;;
+esac
+case "$ARCHS" in
+    *x86_64*) ;;
+    *)
+        echo "error: x86_64 slice missing" >&2
+        exit 1
+        ;;
+esac
 
 git add -A
 git commit -m "Release v${VERSION}"
