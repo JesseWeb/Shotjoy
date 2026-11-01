@@ -45,7 +45,7 @@ open /Applications/Shotjoy.app
 `SHOTJOY_SIGN_IDENTITY`, then Developer ID, then Apple Development, then
 ad-hoc. Building it yourself means the app carries your own signature, so the
 Screen Recording grant stays stable across rebuilds. For a drag-to-Applications
-disk image run `./scripts/make-dmg.sh release` (→ `dist/Shotjoy-1.0.5.dmg`);
+disk image run `./scripts/make-dmg.sh release` (→ `dist/Shotjoy-1.0.6.dmg`);
 notarization is optional and documented in
 [`docs/distribution.md`](docs/distribution.md).
 
