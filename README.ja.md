@@ -45,7 +45,7 @@ open /Applications/Shotjoy.app
 ad-hoc の順で利用可能な署名 ID を選びます。自分でビルドした App には自分の署名が
 付くため、再ビルド後も「画面収録」の許可が維持されます。Applications へ
 ドラッグできる DMG は `./scripts/make-dmg.sh release`
-（→ `dist/Shotjoy-1.0.3.dmg`）で作成でき、公証は任意です
+（→ `dist/Shotjoy-1.0.4.dmg`）で作成でき、公証は任意です
 （[`docs/distribution.md`](docs/distribution.md)）。
 
 ### 3. AI エージェントに任せる
