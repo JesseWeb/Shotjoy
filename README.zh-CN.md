@@ -174,6 +174,7 @@ open -a /Applications/Shotjoy.app --args --status        # 写入 /tmp/shotjoy-s
 open -a /Applications/Shotjoy.app --args --self-test     # 渲染 /tmp/shotjoy-render-test.png
 open -a /Applications/Shotjoy.app --args --demo-overlay  # 合成覆盖层，无需权限
 open -a /Applications/Shotjoy.app --args --capture       # 立即开始真实截图
+open -a /Applications/Shotjoy.app --args --window-pick-test  # 验证点击窗口即可截取该窗口
 ```
 
 ## 许可证

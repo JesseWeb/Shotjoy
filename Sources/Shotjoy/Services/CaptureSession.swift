@@ -46,6 +46,11 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
     private var textScreen: CapturedScreen?
     private var isFinishing = false
 
+    /// Window under the pointer when the current press started. A click without
+    /// a drag captures this window; `hoverWindowRect` is cleared as soon as the
+    /// press begins, so it cannot be used for that decision later.
+    private var pressedWindowRect: CGRect?
+
     private enum DragState {
         case selecting(start: CGPoint)
         case moving(last: CGPoint, original: CGRect)
@@ -162,6 +167,7 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
         }
         unregisterEscapeHotKey()
         removeTextField()
+        pressedWindowRect = nil
         toolbarController?.close()
         toolbarController = nil
         for window in windows {
@@ -189,9 +195,11 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
         updateCursor(at: point)
     }
 
-    func mouseDown(at point: CGPoint, in view: OverlayView, clickCount: Int = 1) {
+    func mouseDown(at point: CGPoint, in view: OverlayView?, clickCount: Int = 1) {
         cursorPoint = point
-        windowForPoint(point)?.makeFirstResponder(view)
+        if let view {
+            windowForPoint(point)?.makeFirstResponder(view)
+        }
 
         if clickCount >= 2, let selection, selection.contains(point) {
             finish(.copy)
@@ -220,7 +228,10 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
             }
         }
 
-        // A click outside an existing selection starts a new one.
+        // A click outside an existing selection starts a new one. Resolve the
+        // window under the pointer first: clicking a highlighted window must
+        // capture that window, and the hover highlight is cleared below.
+        pressedWindowRect = WindowLocator.windowRect(at: point) ?? hoverWindowRect
         annotations.clear()
         toolbarController?.close()
         toolbarController = nil
@@ -273,7 +284,8 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
         case .selecting:
             if let selection, selection.width >= 4, selection.height >= 4 {
                 completeSelection()
-            } else if let hover = hoverWindowRect, hover.width >= 20, hover.height >= 20 {
+            } else if let hover = pressedWindowRect ?? hoverWindowRect,
+                      hover.width >= 20, hover.height >= 20 {
                 selection = hover
                 hoverWindowRect = nil
                 completeSelection()
@@ -281,6 +293,7 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
                 selection = nil
                 redraw()
             }
+            pressedWindowRect = nil
         case .moving, .resizing:
             completeSelection()
         case .drawing:
@@ -853,5 +866,18 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
 
     func setDraftForTesting(_ annotation: Annotation) {
         draft = annotation
+    }
+
+    /// True once a selection is complete and the annotation toolbar is up.
+    var hasToolbarForTesting: Bool {
+        toolbarController != nil
+    }
+
+    /// Drives a press-drag-release cycle without an `OverlayView`, so the
+    /// window-click path can be verified from a debug flag.
+    func clickForTesting(at point: CGPoint) {
+        mouseMoved(to: point)
+        mouseDown(at: point, in: nil)
+        mouseUp(at: point)
     }
 }

@@ -182,6 +182,7 @@ open -a /Applications/Shotjoy.app --args --status        # /tmp/shotjoy-status.t
 open -a /Applications/Shotjoy.app --args --self-test     # /tmp/shotjoy-render-test.png を生成
 open -a /Applications/Shotjoy.app --args --demo-overlay  # 合成オーバーレイ、権限不要
 open -a /Applications/Shotjoy.app --args --capture       # 実際の撮影を開始
+open -a /Applications/Shotjoy.app --args --window-pick-test  # ウインドウのクリック撮影を検証
 ```
 
 ## ライセンス

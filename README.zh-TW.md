@@ -175,6 +175,7 @@ open -a /Applications/Shotjoy.app --args --status        # 寫入 /tmp/shotjoy-s
 open -a /Applications/Shotjoy.app --args --self-test     # 渲染 /tmp/shotjoy-render-test.png
 open -a /Applications/Shotjoy.app --args --demo-overlay  # 合成覆蓋層，無需權限
 open -a /Applications/Shotjoy.app --args --capture       # 立即開始真實截圖
+open -a /Applications/Shotjoy.app --args --window-pick-test  # 驗證點擊視窗即可截取該視窗
 ```
 
 ## 授權條款

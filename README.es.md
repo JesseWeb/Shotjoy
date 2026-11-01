@@ -192,6 +192,7 @@ open -a /Applications/Shotjoy.app --args --status        # escribe /tmp/shotjoy-
 open -a /Applications/Shotjoy.app --args --self-test     # genera /tmp/shotjoy-render-test.png
 open -a /Applications/Shotjoy.app --args --demo-overlay  # superposición sintética, sin permiso
 open -a /Applications/Shotjoy.app --args --capture       # inicia una captura real
+open -a /Applications/Shotjoy.app --args --window-pick-test  # comprueba la captura al hacer clic en una ventana
 ```
 
 ## Licencia

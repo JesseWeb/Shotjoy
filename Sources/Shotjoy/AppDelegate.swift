@@ -116,6 +116,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     self.showTextPreview(text, title: "OCR Test")
                 }
             }
+        } else if arguments.contains("--window-pick-test") {
+            DispatchQueue.main.async { [weak self] in
+                self?.runWindowPickTest()
+            }
         } else if arguments.contains("--settings") {
             DispatchQueue.main.async { [weak self] in
                 self?.settingsController?.show()
@@ -530,6 +534,73 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         path=\(Bundle.main.bundlePath)
         """
         try? status.write(to: URL(fileURLWithPath: "/tmp/shotjoy-status.txt"), atomically: true, encoding: .utf8)
+    }
+
+    /// Verifies the "click a highlighted window to capture it" path: finds a
+    /// real window, drives a full press/release through `CaptureSession`, and
+    /// reports what the session selected.
+    private func runWindowPickTest() {
+        Task { @MainActor in
+            var report = "error=no screens"
+            defer {
+                try? report.write(
+                    to: URL(fileURLWithPath: "/tmp/shotjoy-window-pick.txt"),
+                    atomically: true,
+                    encoding: .utf8
+                )
+                NSApp.terminate(nil)
+            }
+
+            guard let screens = try? await ScreenCaptureService.captureAll(), !screens.isEmpty else {
+                report = "error=capture failed"
+                return
+            }
+
+            let session = CaptureSession(screens: screens)
+            captureSession = session
+            session.start()
+
+            // Sample a grid with the same locator the overlay uses, so the test
+            // targets a window a real click could land on.
+            let bounds = screens[0].bounds
+            var point: CGPoint?
+            var expected: CGRect?
+            outer: for y in stride(from: bounds.minY + 20, to: bounds.maxY - 20, by: 20) {
+                for x in stride(from: bounds.minX + 20, to: bounds.maxX - 20, by: 20) {
+                    let candidate = CGPoint(x: x, y: y)
+                    if let rect = WindowLocator.windowRect(at: candidate) {
+                        point = candidate
+                        expected = rect
+                        break outer
+                    }
+                }
+            }
+
+            guard let target = point, let expectedRect = expected else {
+                report = "error=no window found under the sampled grid"
+                session.cancel()
+                captureSession = nil
+                return
+            }
+
+            session.clickForTesting(at: target)
+
+            func describe(_ rect: CGRect?) -> String {
+                guard let rect else { return "nil" }
+                return "\(Int(rect.minX)),\(Int(rect.minY)) \(Int(rect.width))x\(Int(rect.height))"
+            }
+
+            report = """
+            point=\(Int(target.x)),\(Int(target.y))
+            expected=\(describe(expectedRect))
+            selection=\(describe(session.selection))
+            toolbar=\(session.hasToolbarForTesting)
+            match=\(session.selection == expectedRect)
+            """
+
+            session.cancel()
+            captureSession = nil
+        }
     }
 
     private func startDemoOverlay(showSelection: Bool = true) {
