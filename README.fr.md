@@ -17,8 +17,9 @@ d'icône dans le Dock et n'envoie rien sur le réseau.
 > Mots-clés : capture d'écran macOS, annotation de capture, capture défilante,
 > épinglage, OCR, QR code, masquage de visages.
 
-Appuyez sur **⌃⌘A** (Control-Command-A), faites glisser une zone ou cliquez une
-fenêtre, annotez, puis copiez, enregistrez ou épinglez la capture sur le bureau.
+Appuyez sur **⌃⌘A** (Control-Command-A), puis faites glisser une zone, cliquez
+une fenêtre, ou cliquez le bureau pour capturer tout l'écran. Annotez, puis
+copiez, enregistrez ou épinglez la capture sur le bureau.
 
 ## Installation
 

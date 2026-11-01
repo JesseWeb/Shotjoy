@@ -77,7 +77,6 @@ struct ToolbarView: View {
                     RoundedRectangle(cornerRadius: 13, style: .continuous)
                         .strokeBorder(Color.white.opacity(0.18), lineWidth: 1)
                 )
-                .shadow(color: .black.opacity(0.28), radius: 12, y: 4)
         )
         .padding(4)
     }

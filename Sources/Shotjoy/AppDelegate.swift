@@ -536,9 +536,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         try? status.write(to: URL(fileURLWithPath: "/tmp/shotjoy-status.txt"), atomically: true, encoding: .utf8)
     }
 
-    /// Verifies the "click a highlighted window to capture it" path: finds a
-    /// real window, drives a full press/release through `CaptureSession`, and
-    /// reports what the session selected.
+    /// Verifies the click-to-capture paths: clicking a highlighted window
+    /// selects that window, and clicking the desktop selects the whole display.
+    /// Both runs drive a real press/release through `CaptureSession`.
     private func runWindowPickTest() {
         Task { @MainActor in
             var report = "error=no screens"
@@ -556,50 +556,63 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
 
-            let session = CaptureSession(screens: screens)
-            captureSession = session
-            session.start()
-
-            // Sample a grid with the same locator the overlay uses, so the test
-            // targets a window a real click could land on.
-            let bounds = screens[0].bounds
-            var point: CGPoint?
-            var expected: CGRect?
-            outer: for y in stride(from: bounds.minY + 20, to: bounds.maxY - 20, by: 20) {
-                for x in stride(from: bounds.minX + 20, to: bounds.maxX - 20, by: 20) {
-                    let candidate = CGPoint(x: x, y: y)
-                    if let rect = WindowLocator.windowRect(at: candidate) {
-                        point = candidate
-                        expected = rect
-                        break outer
-                    }
-                }
-            }
-
-            guard let target = point, let expectedRect = expected else {
-                report = "error=no window found under the sampled grid"
-                session.cancel()
-                captureSession = nil
-                return
-            }
-
-            session.clickForTesting(at: target)
-
             func describe(_ rect: CGRect?) -> String {
                 guard let rect else { return "nil" }
                 return "\(Int(rect.minX)),\(Int(rect.minY)) \(Int(rect.width))x\(Int(rect.height))"
             }
 
-            report = """
-            point=\(Int(target.x)),\(Int(target.y))
-            expected=\(describe(expectedRect))
-            selection=\(describe(session.selection))
-            toolbar=\(session.hasToolbarForTesting)
-            match=\(session.selection == expectedRect)
-            """
+            /// Samples a grid with the same locator the overlay uses and returns
+            /// the first point where a window is (or is not) under the pointer.
+            func firstPoint(wantWindow: Bool) -> (CGPoint, CGRect?)? {
+                let bounds = screens[0].bounds
+                for y in stride(from: bounds.minY + 20, to: bounds.maxY - 20, by: 20) {
+                    for x in stride(from: bounds.minX + 20, to: bounds.maxX - 20, by: 20) {
+                        let candidate = CGPoint(x: x, y: y)
+                        let rect = WindowLocator.windowRect(at: candidate)
+                        if wantWindow, let rect { return (candidate, rect) }
+                        if !wantWindow, rect == nil { return (candidate, nil) }
+                    }
+                }
+                return nil
+            }
 
-            session.cancel()
-            captureSession = nil
+            func runClick(at point: CGPoint) -> (CGRect?, Bool) {
+                let session = CaptureSession(screens: screens)
+                captureSession = session
+                session.start()
+                session.clickForTesting(at: point)
+                let picked = session.selection
+                let toolbar = session.hasToolbarForTesting
+                session.cancel()
+                captureSession = nil
+                return (picked, toolbar)
+            }
+
+            guard let windowTarget = firstPoint(wantWindow: true) else {
+                report = "error=no window found under the sampled grid"
+                return
+            }
+            let (windowPick, windowToolbar) = runClick(at: windowTarget.0)
+
+            guard let desktopTarget = firstPoint(wantWindow: false) else {
+                report = "error=no desktop point found under the sampled grid"
+                return
+            }
+            let (desktopPick, desktopToolbar) = runClick(at: desktopTarget.0)
+
+            let display = screens[0].bounds
+            report = """
+            window.point=\(Int(windowTarget.0.x)),\(Int(windowTarget.0.y))
+            window.expected=\(describe(windowTarget.1))
+            window.selection=\(describe(windowPick))
+            window.toolbar=\(windowToolbar)
+            window.match=\(windowPick == windowTarget.1)
+            desktop.point=\(Int(desktopTarget.0.x)),\(Int(desktopTarget.0.y))
+            desktop.expected=\(describe(display))
+            desktop.selection=\(describe(desktopPick))
+            desktop.toolbar=\(desktopToolbar)
+            desktop.match=\(desktopPick == display)
+            """
         }
     }
 

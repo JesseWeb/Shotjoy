@@ -289,6 +289,13 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
                 selection = hover
                 hoverWindowRect = nil
                 completeSelection()
+            } else if let display = screenBounds(containing: point) {
+                // A click on the desktop (no window under the pointer) captures
+                // the whole display, the same way a bare click behaves in other
+                // screenshot tools.
+                selection = display
+                hoverWindowRect = nil
+                completeSelection()
             } else {
                 selection = nil
                 redraw()
@@ -788,6 +795,15 @@ final class CaptureSession: NSObject, NSTextFieldDelegate {
             return windows[index]
         }
         return windows.first
+    }
+
+    /// Full bounds of the display under `point`, or the whole canvas when the
+    /// point falls outside every captured display.
+    private func screenBounds(containing point: CGPoint) -> CGRect? {
+        if let screen = screens.first(where: { $0.bounds.contains(point) }) {
+            return screen.bounds
+        }
+        return canvasBounds.isNull ? nil : canvasBounds
     }
 
     // MARK: - Escape hotkey

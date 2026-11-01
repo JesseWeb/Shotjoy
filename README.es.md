@@ -17,8 +17,9 @@ no tiene icono en el Dock y no envía nada por la red.
 > Palabras clave: captura de pantalla macOS, anotación de capturas, captura con
 > desplazamiento, fijar captura, OCR, código QR, privacidad.
 
-Pulsa **⌃⌘A** (Control-Command-A), arrastra una región o haz clic en una ventana,
-añade anotaciones y luego copia, guarda o fija la captura en el escritorio.
+Pulsa **⌃⌘A** (Control-Command-A), arrastra una región, haz clic en una ventana o
+haz clic en el escritorio para capturar toda la pantalla; añade anotaciones y
+luego copia, guarda o fija la captura en el escritorio.
 
 ## Instalación
 

@@ -136,19 +136,27 @@ final class PinView: NSView {
         let rect = imageRect
         let path = NSBezierPath(roundedRect: rect, xRadius: 9, yRadius: 9)
 
-        // Soft shadow around the image itself, not around the whole window.
+        // Blue glow around the image itself, not around the whole window: a
+        // tight rim, a mid halo and a wide bloom so it reads on dark and light
+        // backgrounds.
         context.saveGState()
         NSColor.black.setFill()
         context.setShadow(
-            offset: CGSize(width: 0, height: 2),
+            offset: .zero,
             blur: 5,
-            color: NSColor.black.withAlphaComponent(0.26).cgColor
+            color: NSColor(srgbRed: 0.48, green: 0.78, blue: 1.0, alpha: 0.70).cgColor
         )
         path.fill()
         context.setShadow(
-            offset: CGSize(width: 0, height: 8),
-            blur: 22,
-            color: NSColor.black.withAlphaComponent(0.34).cgColor
+            offset: .zero,
+            blur: 14,
+            color: NSColor(srgbRed: 0.36, green: 0.68, blue: 1.0, alpha: 0.50).cgColor
+        )
+        path.fill()
+        context.setShadow(
+            offset: .zero,
+            blur: 26,
+            color: NSColor(srgbRed: 0.28, green: 0.58, blue: 1.0, alpha: 0.30).cgColor
         )
         path.fill()
         context.restoreGState()
@@ -246,7 +254,7 @@ final class PinWindowController {
         self.image = image
         self.onClose = onClose
 
-        let padding: CGFloat = 24
+        let padding: CGFloat = 34
         let mainHeight = NSScreen.screens.first?.frame.height ?? 0
         let cocoaPreferred: CGRect? = preferredRect.map {
             GlobalCoordinates.quartzToCocoa($0, mainScreenHeight: mainHeight)

@@ -16,8 +16,9 @@ the menu bar, has no Dock icon, and sends nothing over the network.
 > Keywords: macOS screenshot tool, screenshot annotation, scrolling screenshot,
 > pin screenshot, OCR, screen capture, Mac 截图工具、截图标注、长截图、贴图、文字识别、二维码识别。
 
-Press **⌃⌘A** (Control-Command-A), drag a region or click a window, annotate it,
-then copy, save, or pin it to the desktop.
+Press **⌃⌘A** (Control-Command-A), then drag a region, click a window, or click
+the desktop to capture the whole screen. Annotate it, then copy, save, or pin it
+to the desktop.
 
 ## Install
 
