@@ -101,6 +101,13 @@ final class PinFocusManager {
 final class PinPanel: NSPanel {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { false }
+
+    /// A pin has to stay exactly where the screenshot was taken, even when that
+    /// means hanging over the menu bar or past a screen edge. AppKit's default
+    /// constraint would shove the window down and move the image with it.
+    override func constrainFrameRect(_ frameRect: NSRect, to screen: NSScreen?) -> NSRect {
+        frameRect
+    }
 }
 
 final class PinView: NSView {
@@ -108,12 +115,42 @@ final class PinView: NSView {
     let padding: CGFloat
     weak var controller: PinWindowController?
 
+    /// Window screenshots keep their own (usually larger) rounded corners as
+    /// transparent pixels. Their glow has to follow that silhouette instead of
+    /// the card radius used for opaque captures.
+    private let followsImageAlpha: Bool
+
+    private var dragAnchor: NSPoint?
+    private var dragOrigin: NSPoint?
+
     init(image: CGImage, controller: PinWindowController, padding: CGFloat) {
         self.image = image
         self.controller = controller
         self.padding = padding
+        self.followsImageAlpha = Self.hasTransparentCorner(image)
         super.init(frame: .zero)
         wantsLayer = true
+    }
+
+    /// Samples one corner pixel; rounded window shots are transparent there.
+    private static func hasTransparentCorner(_ image: CGImage) -> Bool {
+        guard let corner = image.cropping(to: CGRect(x: 0, y: 0, width: 1, height: 1)) else {
+            return false
+        }
+        var pixel = [UInt8](repeating: 0, count: 4)
+        return pixel.withUnsafeMutableBytes { buffer -> Bool in
+            guard let context = CGContext(
+                data: buffer.baseAddress,
+                width: 1,
+                height: 1,
+                bitsPerComponent: 8,
+                bytesPerRow: 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else { return false }
+            context.draw(corner, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+            return buffer[3] < 32
+        }
     }
 
     private var imageRect: CGRect {
@@ -135,30 +172,33 @@ final class PinView: NSView {
         guard let context = NSGraphicsContext.current?.cgContext else { return }
         let rect = imageRect
         let path = NSBezierPath(roundedRect: rect, xRadius: 9, yRadius: 9)
+        let focused = window?.isKeyWindow == true
 
-        // Blue glow around the image itself, not around the whole window: a
-        // tight rim, a mid halo and a wide bloom so it reads on dark and light
-        // backgrounds.
+        // Soft blue halo outside the pin body: a tight rim plus a wider bloom.
+        let rim = NSColor(
+            srgbRed: 0.50, green: 0.78, blue: 1.0,
+            alpha: focused ? 0.60 : 0.40
+        ).cgColor
+        let halo = NSColor(
+            srgbRed: 0.38, green: 0.68, blue: 1.0,
+            alpha: focused ? 0.32 : 0.18
+        ).cgColor
+
         context.saveGState()
-        NSColor.black.setFill()
-        context.setShadow(
-            offset: .zero,
-            blur: 5,
-            color: NSColor(srgbRed: 0.48, green: 0.78, blue: 1.0, alpha: 0.70).cgColor
-        )
-        path.fill()
-        context.setShadow(
-            offset: .zero,
-            blur: 14,
-            color: NSColor(srgbRed: 0.36, green: 0.68, blue: 1.0, alpha: 0.50).cgColor
-        )
-        path.fill()
-        context.setShadow(
-            offset: .zero,
-            blur: 26,
-            color: NSColor(srgbRed: 0.28, green: 0.58, blue: 1.0, alpha: 0.30).cgColor
-        )
-        path.fill()
+        if followsImageAlpha {
+            // Let the image's own alpha define the silhouette, so a rounded
+            // window screenshot glows along its real corners.
+            context.setShadow(offset: .zero, blur: 6, color: rim)
+            CGDrawing.drawImage(image, in: rect, context: context, flipped: true)
+            context.setShadow(offset: .zero, blur: 18, color: halo)
+            CGDrawing.drawImage(image, in: rect, context: context, flipped: true)
+        } else {
+            NSColor.black.setFill()
+            context.setShadow(offset: .zero, blur: 6, color: rim)
+            path.fill()
+            context.setShadow(offset: .zero, blur: 18, color: halo)
+            path.fill()
+        }
         context.restoreGState()
 
         context.saveGState()
@@ -166,11 +206,14 @@ final class PinView: NSView {
         CGDrawing.drawImage(image, in: rect, context: context, flipped: true)
         context.restoreGState()
 
+        // A card border only makes sense when the pin is a plain rectangle.
+        guard !followsImageAlpha else { return }
+
         path.lineWidth = 1
         NSColor.white.withAlphaComponent(0.32).setStroke()
         path.stroke()
 
-        if window?.isKeyWindow == true {
+        if focused {
             let focusPath = NSBezierPath(roundedRect: rect.insetBy(dx: 1, dy: 1), xRadius: 8, yRadius: 8)
             focusPath.lineWidth = 2
             NSColor.systemBlue.setStroke()
@@ -212,8 +255,29 @@ final class PinView: NSView {
         if event.clickCount >= 2 {
             controller?.close()
         } else {
-            window?.performDrag(with: event)
+            // `performDrag(with:)` runs the system window-drag session, which
+            // pushes the frame back inside the screen. Moving the window by hand
+            // keeps our `constrainFrameRect` override in charge, so a pin can be
+            // dragged back over the menu bar.
+            dragAnchor = NSEvent.mouseLocation
+            dragOrigin = window?.frame.origin
         }
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard let dragAnchor, let dragOrigin, let window else { return }
+        let current = NSEvent.mouseLocation
+        window.setFrameOrigin(
+            NSPoint(
+                x: dragOrigin.x + (current.x - dragAnchor.x),
+                y: dragOrigin.y + (current.y - dragAnchor.y)
+            )
+        )
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        dragAnchor = nil
+        dragOrigin = nil
     }
 
     override func menu(for event: NSEvent) -> NSMenu? {
@@ -254,7 +318,7 @@ final class PinWindowController {
         self.image = image
         self.onClose = onClose
 
-        let padding: CGFloat = 34
+        let padding: CGFloat = 24
         let mainHeight = NSScreen.screens.first?.frame.height ?? 0
         let cocoaPreferred: CGRect? = preferredRect.map {
             GlobalCoordinates.quartzToCocoa($0, mainScreenHeight: mainHeight)
@@ -289,7 +353,7 @@ final class PinWindowController {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = false
-        panel.isMovableByWindowBackground = true
+        panel.isMovableByWindowBackground = false
         panel.isReleasedWhenClosed = false
         panel.hidesOnDeactivate = false
 

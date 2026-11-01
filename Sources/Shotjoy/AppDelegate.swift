@@ -136,6 +136,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     self.pin(image, at: CGRect(x: 300, y: 200, width: 400, height: 300))
                 }
             }
+        } else if arguments.contains("--pin-test-edge") {
+            // A pin captured at the very top of the screen must not be pushed
+            // down by AppKit's window constraint.
+            Task { @MainActor in
+                if let image = self.makeTestImage(width: 800, height: 400) {
+                    self.pin(image, at: CGRect(x: 300, y: 0, width: 400, height: 200))
+                }
+            }
+        } else if arguments.contains("--pin-test-rounded") {
+            Task { @MainActor in
+                if let image = self.makeRoundedTestImage(width: 800, height: 600, radius: 44) {
+                    self.pin(image, at: CGRect(x: 300, y: 200, width: 400, height: 300))
+                }
+            }
         } else if arguments.contains("--ocr-test") {
             Task { @MainActor in
                 guard let image = self.makeTestImage(width: 800, height: 600) else {
@@ -808,6 +822,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let saved = (try? ImageExporter.save(output, to: URL(fileURLWithPath: "/tmp/shotjoy-render-test.png"))) != nil
         let status = "rendered=\(output.width)x\(output.height) saved=\(saved)\n"
         try? status.write(to: URL(fileURLWithPath: "/tmp/shotjoy-status.txt"), atomically: true, encoding: .utf8)
+    }
+
+    /// A capture shaped like a window screenshot: opaque content with
+    /// transparent rounded corners.
+    private func makeRoundedTestImage(width: Int, height: Int, radius: CGFloat) -> CGImage? {
+        guard let space = CGColorSpace(name: CGColorSpace.sRGB),
+              let context = CGContext(
+                data: nil,
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: 0,
+                space: space,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+              ) else { return nil }
+        context.translateBy(x: 0, y: CGFloat(height))
+        context.scaleBy(x: 1, y: -1)
+        let bounds = CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height))
+        let path = CGPath(roundedRect: bounds, cornerWidth: radius, cornerHeight: radius, transform: nil)
+        context.addPath(path)
+        context.clip()
+        context.setFillColor(NSColor.systemIndigo.cgColor)
+        context.fill(bounds)
+        context.setFillColor(NSColor.systemTeal.cgColor)
+        context.fill(CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height * 0.28))
+        return context.makeImage()
     }
 
     private func makeTestImage(width: Int, height: Int) -> CGImage? {
