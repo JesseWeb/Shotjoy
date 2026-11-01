@@ -3,7 +3,7 @@
 # Notarize and staple a Shotjoy disk image.
 #
 # Usage:
-#   ./scripts/notarize.sh dist/Shotjoy-1.0.4.dmg
+#   ./scripts/notarize.sh dist/Shotjoy-1.0.5.dmg
 #
 # Credentials, pick one:
 #   APPLE_ID, APPLE_TEAM_ID, APPLE_APP_PASSWORD
