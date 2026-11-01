@@ -80,6 +80,12 @@ This bumps `Support/Info.plist`, builds an ad-hoc universal DMG, commits
 DMG. It reuses the GitHub credential git already stores, so no separate
 `gh auth login` is needed on a machine that can push.
 
+To write custom notes, pass plain Markdown (never a JSON `{"body": ...}` file):
+
+```sh
+./scripts/set-release-notes.sh 1.0.5 notes.md
+```
+
 See [`docs/releasing.md`](docs/releasing.md).
 
 ## 5. Install and launch

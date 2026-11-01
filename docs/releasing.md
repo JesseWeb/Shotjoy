@@ -41,6 +41,20 @@ machine that can push to the repository no separate login step is required.
 
 If neither is available, run `gh auth login` once.
 
+## Release notes
+
+`release.sh` starts from `--generate-notes`. To write real notes, pass a **plain
+Markdown** file:
+
+```sh
+./scripts/set-release-notes.sh 1.0.5 docs/notes-1.0.5.md
+```
+
+Do not pass a JSON payload such as `{"body": "..."}`. `gh release edit
+--notes-file` copies the file verbatim, so JSON ends up on the release page as
+escaped text (`\uff08`, `\u622a`). `set-release-notes.sh` rejects JSON input and
+verifies the stored body afterwards.
+
 ## If Actions is disabled
 
 The repository contains `.github/workflows/release.yml`, which can build and
