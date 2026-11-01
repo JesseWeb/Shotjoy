@@ -4,7 +4,7 @@
 
 [![macOS 14+](https://img.shields.io/badge/macOS-14%2B-blue)](https://www.apple.com/macos/) [![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange)](https://swift.org) [![Release](https://img.shields.io/github/v/release/JesseWeb/Shotjoy)](https://github.com/JesseWeb/Shotjoy/releases) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 
-![Shotjoy 覆蓋層](docs/screenshot.png)
+![Shotjoy（截趣）首圖：⌃⌘A 截圖覆蓋層與標註工具列](docs/hero.jpg)
 
 [English](README.md) · [简体中文](README.zh-CN.md) · **[繁體中文](README.zh-TW.md)** · [日本語](README.ja.md) · [Français](README.fr.md) · [Español](README.es.md)
 
