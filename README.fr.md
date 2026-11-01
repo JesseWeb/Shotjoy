@@ -76,7 +76,7 @@ open /Applications/Shotjoy.app
 Créer un DMG à glisser dans Applications :
 
 ```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.2.dmg
+./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.3.dmg
 ```
 
 `make-app.sh` choisit l'identité de signature disponible :

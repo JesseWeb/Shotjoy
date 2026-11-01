@@ -67,7 +67,7 @@ open /Applications/Shotjoy.app
 アプリケーションフォルダへドラッグできる DMG を作成：
 
 ```sh
-./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.2.dmg
+./scripts/make-dmg.sh release    # -> dist/Shotjoy-1.0.3.dmg
 ```
 
 `make-app.sh` は `SHOTJOY_SIGN_IDENTITY`、Developer ID、Apple Development、

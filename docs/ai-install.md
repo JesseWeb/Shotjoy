@@ -41,7 +41,7 @@ Screen Recording grant stays stable.
 5. Ask you to switch Shotjoy on under
    **System Settings → Privacy & Security → Screen Recording**.
 6. Press `⌃⌘A`, select a region, click **Done**, and paste into TextEdit.
-7. Optionally build `dist/Shotjoy-1.0.2.dmg` with `./scripts/make-dmg.sh release`.
+7. Optionally build `dist/Shotjoy-1.0.3.dmg` with `./scripts/make-dmg.sh release`.
 
 ## What the agent cannot do for you
 
