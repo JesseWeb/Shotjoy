@@ -49,7 +49,7 @@ open /Applications/Shotjoy.app
 último ad-hoc. Una compilación propia lleva tu firma, así que el permiso de
 grabación de pantalla se mantiene al recompilar. Para una imagen de disco
 arrastrable a Aplicaciones ejecuta `./scripts/make-dmg.sh release`
-(→ `dist/Shotjoy-1.0.7.dmg`); la notarización es opcional y está documentada en
+(→ `dist/Shotjoy-1.0.8.dmg`); la notarización es opcional y está documentada en
 [`docs/distribution.md`](docs/distribution.md).
 
 ### 3. Dejar que un agente de IA la instale

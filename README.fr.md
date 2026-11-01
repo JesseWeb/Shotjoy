@@ -49,7 +49,7 @@ open /Applications/Shotjoy.app
 Une compilation locale porte votre propre signature : l'autorisation
 d'enregistrement de l'écran reste valide après un nouveau build. Pour une image
 disque à glisser dans Applications, lancez `./scripts/make-dmg.sh release`
-(→ `dist/Shotjoy-1.0.7.dmg`) ; la notarisation est facultative et décrite dans
+(→ `dist/Shotjoy-1.0.8.dmg`) ; la notarisation est facultative et décrite dans
 [`docs/distribution.md`](docs/distribution.md).
 
 ### 3. Laisser un agent IA l'installer

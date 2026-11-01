@@ -43,7 +43,7 @@ open /Applications/Shotjoy.app
 `make-app.sh` 会按顺序选择签名身份：`SHOTJOY_SIGN_IDENTITY`、Developer ID、
 Apple Development、ad-hoc。自己编译的 App 会带上你自己的签名，重新编译后
 「屏幕录制」授权也不会失效。想做成可拖入「应用程序」的 DMG，执行
-`./scripts/make-dmg.sh release`（→ `dist/Shotjoy-1.0.7.dmg`）；公证是可选项，
+`./scripts/make-dmg.sh release`（→ `dist/Shotjoy-1.0.8.dmg`）；公证是可选项，
 详见 [`docs/distribution.md`](docs/distribution.md)。
 
 ### 3. 交给 AI 安装
